@@ -13,7 +13,108 @@
     />
   </head>
   <body>
-    
+    <!-- Header -->
+    <div class="container">
+      <header
+        class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-1 mb-4 border-bottom"
+      >
+        <!-- Profile pic -->
+        <div class="col-md-3 mb-2 mb-md-0">
+          <a
+            href="/"
+            class="d-inline-flex link-body-emphasis text-decoration-none"
+          >
+            <img
+              class="bi rounded-circle"
+              width="100"
+              height="100"
+              role="img"
+              aria-label="Bootstrap"
+              src="./assets/Benjamin Saks - Smiling 400x400.jpg"
+              alt="profile picture"
+            />
+          </a>
+        </div>
+        <!-- Nav links -->
+        <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+          <li><a href="#skills-section" class="nav-link px-2">Skills</a></li>
+          <li>
+            <a href="#projects-section" class="nav-link px-2">Projects</a>
+          </li>
+          <li><a href="#about-section" class="nav-link px-2">About</a></li>
+          <li><a href="#contact-section" class="nav-link px-2">Contact</a></li>
+        </ul>
+      </header>
+    </div>
+    <!-- Hero -->
+    <div class="px-4 py-5 my-5 text-center">
+      <h1 class="display-5 fw-bold text-body-emphasis">Hello, I'm Benjamin</h1>
+      <div class="col-lg-6 mx-auto">
+        <p class="lead mb-4">I'm a Front-end Engineer</p>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+          <a href="#projects-section"
+            ><button type="button" class="btn btn-primary btn-lg px-4 gap-3">
+              MY WORK
+            </button></a
+          >
+        </div>
+      </div>
+    </div>
+    <!-- My Skills grid -->
+    <div class="container px-5 py-5" id="skills-section">
+      <h2 class="w-100 pb-2 border-bottom text-center">My Skills</h2>
+      <div class="row g-4 py-5">
+        <div class="col skill-div">
+          <div>
+            <img class="skill-icon" src="./assets/skill-icons/html-css.png" alt="HTML/CSS logo" />
+        </div>
+        </div>
+        <div class="col skill-div">
+          <div>
+            <img class="skill-icon" src="./assets/skill-icons/javascript-icon.svg" alt="JavaScript logo" />
+        </div>
+        </div>
+        <div class="col skill-div">
+          <div>
+            <img class="skill-icon" src="./assets/skill-icons/typescript-icon.png" alt="TypeScript logo" />
+          </div>
+        </div>
+      </div>
+      <div class="row g-4 py-5">
+        <div class="col skill-div">
+          <div>
+            <img class="skill-icon" src="./assets/skill-icons/react-icon.png" alt="React.js logo" />
+          </div>
+        </div>
+        <div class="col skill-div">
+          <div>
+            <img class="skill-icon" src="./assets/skill-icons/next-icon.png" alt="Next.js logo" />
+          </div>
+        </div>
+        <div class="col skill-div">
+          <div>
+            <img class="skill-icon" src="./assets/skill-icons/angular-icon.png" alt="Angular logo" />
+        </div>
+        </div>
+      </div>
+      <div class="row g-4 py-5">
+        <div class="col skill-div">
+          <div>
+            <img class="skill-icon" src="./assets/skill-icons/tailwind-icon.svg" alt="Tailwind logo" />
+        </div>
+        </div>
+        <div class="col skill-div">
+          <div>
+            <img class="skill-icon" src="./assets/skill-icons/redux-icon.png" alt="Redux logo" />
+        </div>
+        </div>
+        <div class="col skill-div">
+          <div>
+            <img class="skill-icon" src="./assets/skill-icons/storybook-icon.png" alt="Storybook logo" />
+        </div>
+        </div>
+      </div>
+    </div>
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
       integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
