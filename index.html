@@ -14,7 +14,7 @@
   </head>
   <body>
     <!-- Header -->
-    <div class="container">
+    <div id="header-section" class="container">
       <header
         class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-1 mb-4 border-bottom"
       >
@@ -43,77 +43,457 @@
           </li>
           <li><a href="#about-section" class="nav-link px-2">About</a></li>
           <li><a href="#contact-section" class="nav-link px-2">Contact</a></li>
+          <li class="ms-3">
+            <a href="https://github.com/saksben"
+              ><img
+                class="nav-icon"
+                src="./assets/contact-icons/github-icon.png"
+                alt="GitHub logo"
+            /></a>
+          </li>
+          <li class="ms-3">
+            <a href="https://www.linkedin.com/in/saksben/"
+              ><img
+                class="nav-icon"
+                src="./assets/contact-icons/linkedin-icon.png"
+                alt="LinkedIn logo"
+            /></a>
+          </li>
         </ul>
       </header>
     </div>
     <!-- Hero -->
-    <div class="px-4 py-5 my-5 text-center">
-      <h1 class="display-5 fw-bold text-body-emphasis">Hello, I'm Benjamin</h1>
-      <div class="col-lg-6 mx-auto">
-        <p class="lead mb-4">I'm a Front-end Engineer</p>
-        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-          <a href="#projects-section"
-            ><button type="button" class="btn btn-primary btn-lg px-4 gap-3">
-              MY WORK
-            </button></a
+    <div id="hero-section" class="container my-5">
+      <div class="p-5 text-center bg-body-tertiary rounded-3">
+        <h1 class="text-body-emphasis">Hello, I'm Benjamin</h1>
+        <p id="tagline" class="col-lg-8 mx-auto fs-5 text-muted">I'm a Front-end Engineer</p>
+        <div class="d-inline-flex gap-2 mb-5">
+          <button
+            class="d-inline-flex align-items-center btn btn-primary btn-lg px-4 rounded-pill"
+            type="button"
           >
+            My Work
+            <svg
+              id="arrow-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="30"
+              height="30"
+              fill="currentColor"
+              class="bi bi-arrow-right"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+              />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
     <!-- My Skills grid -->
-    <div class="container px-5 py-5" id="skills-section">
+    <div id="skills-section" class="container px-5 py-5">
       <h2 class="w-100 pb-2 border-bottom text-center">My Skills</h2>
       <div class="row g-4 py-5">
         <div class="col skill-div">
           <div>
-            <img class="skill-icon" src="./assets/skill-icons/html-css.png" alt="HTML/CSS logo" />
-        </div>
+            <img
+              class="skill-icon"
+              src="./assets/skill-icons/html-css.png"
+              alt="HTML/CSS logo"
+            />
+          </div>
         </div>
         <div class="col skill-div">
           <div>
-            <img class="skill-icon" src="./assets/skill-icons/javascript-icon.svg" alt="JavaScript logo" />
-        </div>
+            <img
+              class="skill-icon"
+              src="./assets/skill-icons/javascript-icon.svg"
+              alt="JavaScript logo"
+            />
+          </div>
         </div>
         <div class="col skill-div">
           <div>
-            <img class="skill-icon" src="./assets/skill-icons/typescript-icon.png" alt="TypeScript logo" />
+            <img
+              class="skill-icon"
+              src="./assets/skill-icons/typescript-icon.png"
+              alt="TypeScript logo"
+            />
           </div>
         </div>
       </div>
       <div class="row g-4 py-5">
         <div class="col skill-div">
           <div>
-            <img class="skill-icon" src="./assets/skill-icons/react-icon.png" alt="React.js logo" />
+            <img
+              class="skill-icon"
+              src="./assets/skill-icons/react-icon.png"
+              alt="React.js logo"
+            />
           </div>
         </div>
         <div class="col skill-div">
           <div>
-            <img class="skill-icon" src="./assets/skill-icons/next-icon.png" alt="Next.js logo" />
+            <img
+              class="skill-icon"
+              src="./assets/skill-icons/next-icon.png"
+              alt="Next.js logo"
+            />
           </div>
         </div>
         <div class="col skill-div">
           <div>
-            <img class="skill-icon" src="./assets/skill-icons/angular-icon.png" alt="Angular logo" />
-        </div>
+            <img
+              class="skill-icon"
+              src="./assets/skill-icons/angular-icon.png"
+              alt="Angular logo"
+            />
+          </div>
         </div>
       </div>
       <div class="row g-4 py-5">
         <div class="col skill-div">
           <div>
-            <img class="skill-icon" src="./assets/skill-icons/tailwind-icon.svg" alt="Tailwind logo" />
-        </div>
+            <img
+              class="skill-icon"
+              src="./assets/skill-icons/tailwind-icon.svg"
+              alt="Tailwind logo"
+            />
+          </div>
         </div>
         <div class="col skill-div">
           <div>
-            <img class="skill-icon" src="./assets/skill-icons/redux-icon.png" alt="Redux logo" />
-        </div>
+            <img
+              class="skill-icon"
+              src="./assets/skill-icons/redux-icon.png"
+              alt="Redux logo"
+            />
+          </div>
         </div>
         <div class="col skill-div">
           <div>
-            <img class="skill-icon" src="./assets/skill-icons/storybook-icon.png" alt="Storybook logo" />
-        </div>
+            <img
+              class="skill-icon"
+              src="./assets/skill-icons/storybook-icon.png"
+              alt="Storybook logo"
+            />
+          </div>
         </div>
       </div>
+    </div>
+    <!-- Projects -->
+    <div id="projects-section" class="container">
+      <!-- Project featurettes -->
+      <hr class="featurette-divider" />
+      <h2 class="w-100 pb-2 border-bottom text-center">Projects</h2>
+
+      <div class="row featurette">
+        <div class="col-md-7 order-md-2">
+          <h3 class="featurette-heading fw-normal lh-1">
+            Oh yeah, it’s that good.
+            <span class="text-body-secondary">See for yourself.</span>
+          </h3>
+          <p class="lead">
+            Another featurette? Of course. More placeholder content here to give
+            you an idea of how this layout would work with some actual
+            real-world content in place.
+          </p>
+        </div>
+        <div class="col-md-5 order-md-1">
+          <svg
+            class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
+            width="500"
+            height="500"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Placeholder: 500x500"
+            preserveAspectRatio="xMidYMid slice"
+            focusable="false"
+          >
+            <title>Placeholder</title>
+            <rect
+              width="100%"
+              height="100%"
+              fill="var(--bs-secondary-bg)"
+            ></rect>
+            <text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">
+              500x500
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <hr class="featurette-divider" />
+
+      <div class="row featurette">
+        <div class="col-md-7">
+          <h3 class="featurette-heading fw-normal lh-1">
+            First featurette heading.
+            <span class="text-body-secondary">It’ll blow your mind.</span>
+          </h3>
+          <p class="lead">
+            Some great placeholder content for the first featurette here.
+            Imagine some exciting prose here.
+          </p>
+        </div>
+        <div class="col-md-5">
+          <svg
+            class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
+            width="500"
+            height="500"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Placeholder: 500x500"
+            preserveAspectRatio="xMidYMid slice"
+            focusable="false"
+          >
+            <title>Placeholder</title>
+            <rect
+              width="100%"
+              height="100%"
+              fill="var(--bs-secondary-bg)"
+            ></rect>
+            <text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">
+              500x500
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <hr class="featurette-divider" />
+
+      <div class="row featurette">
+        <div class="col-md-7 order-md-2">
+          <h3 class="featurette-heading fw-normal lh-1">
+            Oh yeah, it’s that good.
+            <span class="text-body-secondary">See for yourself.</span>
+          </h3>
+          <p class="lead">
+            Another featurette? Of course. More placeholder content here to give
+            you an idea of how this layout would work with some actual
+            real-world content in place.
+          </p>
+        </div>
+        <div class="col-md-5 order-md-1">
+          <svg
+            class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
+            width="500"
+            height="500"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Placeholder: 500x500"
+            preserveAspectRatio="xMidYMid slice"
+            focusable="false"
+          >
+            <title>Placeholder</title>
+            <rect
+              width="100%"
+              height="100%"
+              fill="var(--bs-secondary-bg)"
+            ></rect>
+            <text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">
+              500x500
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <hr class="featurette-divider" />
+
+      <div class="row featurette">
+        <div class="col-md-7">
+          <h3 class="featurette-heading fw-normal lh-1">
+            And lastly, this one.
+            <span class="text-body-secondary">Checkmate.</span>
+          </h3>
+          <p class="lead">
+            And yes, this is the last block of representative placeholder
+            content. Again, not really intended to be actually read, simply here
+            to give you a better view of what this would look like with some
+            actual content. Your content.
+          </p>
+        </div>
+        <div class="col-md-5">
+          <svg
+            class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
+            width="500"
+            height="500"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Placeholder: 500x500"
+            preserveAspectRatio="xMidYMid slice"
+            focusable="false"
+          >
+            <title>Placeholder</title>
+            <rect
+              width="100%"
+              height="100%"
+              fill="var(--bs-secondary-bg)"
+            ></rect>
+            <text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">
+              500x500
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <hr class="featurette-divider" />
+
+      <div class="row featurette">
+        <div class="col-md-7 order-md-2">
+          <h3 class="featurette-heading fw-normal lh-1">
+            Oh yeah, it’s that good.
+            <span class="text-body-secondary">See for yourself.</span>
+          </h3>
+          <p class="lead">
+            Another featurette? Of course. More placeholder content here to give
+            you an idea of how this layout would work with some actual
+            real-world content in place.
+          </p>
+        </div>
+        <div class="col-md-5 order-md-1">
+          <svg
+            class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
+            width="500"
+            height="500"
+            xmlns="http://www.w3.org/2000/svg"
+            role="img"
+            aria-label="Placeholder: 500x500"
+            preserveAspectRatio="xMidYMid slice"
+            focusable="false"
+          >
+            <title>Placeholder</title>
+            <rect
+              width="100%"
+              height="100%"
+              fill="var(--bs-secondary-bg)"
+            ></rect>
+            <text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">
+              500x500
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <hr class="featurette-divider" />
+
+      <!-- /END THE FEATURETTES -->
+    </div>
+    <!-- About -->
+    <div id="about-section" class="my-5">
+      <div class="p-5 text-center bg-body-tertiary">
+        <div class="container py-5">
+          <h2 class="text-body-emphasis">About Me</h2>
+          <p class="col-lg-8 mx-auto lead">
+            This takes the basic jumbotron above and makes its background
+            edge-to-edge with a <code>.container</code> inside to align content.
+            Similar to above, it's been recreated with built-in grid and utility
+            classes.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!-- Contact -->
+    <div id="contact-section" class="container d-flex flex-column align-items-center">
+      <h2 class="w-100 pb-2 border-bottom text-center">Connect With Me</h2>
+      <div>
+        <a href="https://github.com/saksben" target="_blank"
+          ><img
+            class="contact-icon"
+            src="./assets/contact-icons/github-icon.png"
+            alt="GitHub logo"
+        /></a>
+        <a href="https://www.linkedin.com/in/saksben/"
+          ><img
+            class="contact-icon"
+            src="./assets/contact-icons/linkedin-icon.png"
+            alt="LinkedIn logo"
+        /></a>
+      </div>
+      <form class="d-flex flex-column" action="https://formspree.io/f/xdoqpdky" method="POST">
+        <input
+          type="hidden"
+          name="_subject"
+          value="Someone Contacted You from Your Personal Website"
+        />
+        <label>
+          Your name:
+          <input type="text" name="name" placeholder="Tony Stark" required />
+        </label>
+        <label>
+          Your email:
+          <input
+            type="email"
+            name="_replyto"
+            placeholder="earthsmightiesthero@stark.com"
+            required
+          />
+        </label>
+        <label>
+          Your message:
+          <textarea
+            name="message"
+            placeholder="We want you to join the Avengers"
+            required
+          ></textarea>
+        </label>
+        <!-- your other form fields go here -->
+        <button type="submit">Send</button>
+      </form>
+    </div>
+    <!-- Footer -->
+    <div id="footer-section" class="container">
+      <footer
+        class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"
+      >
+        <p class="mb-0 text-body-secondary">© 2024 Benjamin Saks</p>
+        <ul class="nav justify-content-end">
+          <li class="nav-item">
+            <a href="#header-section" class="nav-link px-2 text-body-secondary"
+              >Home</a
+            >
+          </li>
+          <li class="nav-item">
+            <a href="#skills-section" class="nav-link px-2 text-body-secondary"
+              >Skills</a
+            >
+          </li>
+          <li class="nav-item">
+            <a
+              href="#projects-section"
+              class="nav-link px-2 text-body-secondary"
+              >Projects</a
+            >
+          </li>
+          <li class="nav-item">
+            <a href="#about-section" class="nav-link px-2 text-body-secondary"
+              >About</a
+            >
+          </li>
+          <li class="nav-item">
+            <a href="#contact-section" class="nav-link px-2 text-body-secondary"
+              >Contact</a
+            >
+          </li>
+          <li class="ms-3">
+            <a href="https://github.com/saksben"
+              ><img
+                class="nav-icon"
+                src="./assets/contact-icons/github-icon.png"
+                alt="GitHub logo"
+            /></a>
+          </li>
+          <li class="ms-3">
+            <a href="https://www.linkedin.com/in/saksben/"
+              ><img
+                class="nav-icon"
+                src="./assets/contact-icons/linkedin-icon.png"
+                alt="LinkedIn logo"
+            /></a>
+          </li>
+        </ul>
+      </footer>
     </div>
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

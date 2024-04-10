@@ -1,3 +1,11 @@
+.nav-icon {
+    height: 25px;
+}
+
+#arrow-icon {
+    padding-left: 10px;
+}
+
 .skill-icon {
     height: 100px;
     width: 100px;
@@ -8,4 +16,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.contact-icon {
+    height: 40px;
 }
