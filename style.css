@@ -2,14 +2,29 @@
     height: 25px;
 }
 
-#arrow-icon {
+.hero-img {
+    background-image: url("./assets/cover-img.jpg");
+    height: 425px;
+}
+
+.hero-main {
+    z-index: 10;
+}
+
+.shadow-overlay {
+    background-color: black;
+    height: 53.5%;
+    opacity: 25%;
+}
+
+.arrow-icon {
     padding-left: 10px;
 }
 
 .skill-icon {
     height: 100px;
     width: 100px;
-    background-color: white;
+    background-color: light;
 }
 
 .skill-div {
@@ -20,4 +35,15 @@
 
 .contact-icon {
     height: 40px;
+}
+
+form input,
+form textarea,
+form button {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+li a {
+    color: white;
 }

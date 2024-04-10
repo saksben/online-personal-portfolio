@@ -12,11 +12,11 @@
       crossorigin="anonymous"
     />
   </head>
-  <body>
+  <body class="bg-dark">
     <!-- Header -->
     <div id="header-section" class="container">
       <header
-        class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-1 mb-4 border-bottom"
+        class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-1"
       >
         <!-- Profile pic -->
         <div class="col-md-3 mb-2 mb-md-0">
@@ -36,7 +36,7 @@
           </a>
         </div>
         <!-- Nav links -->
-        <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+        <ul class="nav col-12 col-md-auto mb-2 d-flex align-items-center justify-content-center mb-md-0">
           <li><a href="#skills-section" class="nav-link px-2">Skills</a></li>
           <li>
             <a href="#projects-section" class="nav-link px-2">Projects</a>
@@ -44,15 +44,17 @@
           <li><a href="#about-section" class="nav-link px-2">About</a></li>
           <li><a href="#contact-section" class="nav-link px-2">Contact</a></li>
           <li class="ms-3">
-            <a href="https://github.com/saksben"
-              ><img
-                class="nav-icon"
-                src="./assets/contact-icons/github-icon.png"
-                alt="GitHub logo"
-            /></a>
+            <a href="https://github.com/saksben" target="_blank"
+              ><div class="mr-2 bg-light rounded">
+                <img
+                  class="nav-icon"
+                  src="./assets/contact-icons/github-icon.png"
+                  alt="GitHub logo"
+                /></div
+            ></a>
           </li>
           <li class="ms-3">
-            <a href="https://www.linkedin.com/in/saksben/"
+            <a href="https://www.linkedin.com/in/saksben/" target="_blank"
               ><img
                 class="nav-icon"
                 src="./assets/contact-icons/linkedin-icon.png"
@@ -63,10 +65,17 @@
       </header>
     </div>
     <!-- Hero -->
-    <div id="hero-section" class="container my-5">
-      <div class="p-5 text-center bg-body-tertiary rounded-3">
-        <h1 class="text-body-emphasis">Hello, I'm Benjamin</h1>
-        <p id="tagline" class="col-lg-8 mx-auto fs-5 text-muted">I'm a Front-end Engineer</p>
+    <div id="hero-section" class="hero-img">
+      <div class="shadow-overlay w-100 position-absolute"></div>
+      <div
+        class="hero-main pt-5 text-center bg-body-tertiary rounded-3 position-relative"
+      >
+        <h1 class="pt-5 mt-2 text-body-emphasis text-white">
+          Hello, I'm Benjamin
+        </h1>
+        <p id="tagline" class="col-lg-8 mx-auto fs-5 text-white">
+          I'm a Front-end Engineer
+        </p>
         <div class="d-inline-flex gap-2 mb-5">
           <button
             class="d-inline-flex align-items-center btn btn-primary btn-lg px-4 rounded-pill"
@@ -74,12 +83,11 @@
           >
             My Work
             <svg
-              id="arrow-icon"
               xmlns="http://www.w3.org/2000/svg"
               width="30"
               height="30"
               fill="currentColor"
-              class="bi bi-arrow-right"
+              class="bi bi-arrow-right arrow-icon"
               viewBox="0 0 16 16"
             >
               <path
@@ -92,326 +100,405 @@
       </div>
     </div>
     <!-- My Skills grid -->
-    <div id="skills-section" class="container px-5 py-5">
-      <h2 class="w-100 pb-2 border-bottom text-center">My Skills</h2>
-      <div class="row g-4 py-5">
-        <div class="col skill-div">
-          <div>
-            <img
-              class="skill-icon"
-              src="./assets/skill-icons/html-css.png"
-              alt="HTML/CSS logo"
-            />
+    <div id="skills-section" class="px-5 py-5 bg-light">
+      <div class="container shadow d-flex flex-column align-items-center">
+        <h2 class="w-75 pt-5 pb-3 border-bottom text-center">My Skills</h2>
+        <div class="row g-4 py-5 w-100">
+          <div class="col skill-div">
+            <div>
+              <img
+                class="skill-icon"
+                src="./assets/skill-icons/html-css.png"
+                alt="HTML/CSS logo"
+              />
+            </div>
+          </div>
+          <div class="col skill-div">
+            <div>
+              <img
+                class="skill-icon"
+                src="./assets/skill-icons/javascript-icon.svg"
+                alt="JavaScript logo"
+              />
+            </div>
+          </div>
+          <div class="col skill-div">
+            <div>
+              <img
+                class="skill-icon"
+                src="./assets/skill-icons/typescript-icon.png"
+                alt="TypeScript logo"
+              />
+            </div>
           </div>
         </div>
-        <div class="col skill-div">
-          <div>
-            <img
-              class="skill-icon"
-              src="./assets/skill-icons/javascript-icon.svg"
-              alt="JavaScript logo"
-            />
+        <div class="row g-4 py-5 w-100">
+          <div class="col skill-div">
+            <div>
+              <img
+                class="skill-icon"
+                src="./assets/skill-icons/react-icon.png"
+                alt="React.js logo"
+              />
+            </div>
+          </div>
+          <div class="col skill-div">
+            <div>
+              <img
+                class="skill-icon"
+                src="./assets/skill-icons/next-icon.png"
+                alt="Next.js logo"
+              />
+            </div>
+          </div>
+          <div class="col skill-div">
+            <div>
+              <img
+                class="skill-icon"
+                src="./assets/skill-icons/angular-icon.png"
+                alt="Angular logo"
+              />
+            </div>
           </div>
         </div>
-        <div class="col skill-div">
-          <div>
-            <img
-              class="skill-icon"
-              src="./assets/skill-icons/typescript-icon.png"
-              alt="TypeScript logo"
-            />
+        <div class="row g-4 py-5 w-100">
+          <div class="col skill-div">
+            <div>
+              <img
+                class="skill-icon"
+                src="./assets/skill-icons/tailwind-icon.svg"
+                alt="Tailwind logo"
+              />
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="row g-4 py-5">
-        <div class="col skill-div">
-          <div>
-            <img
-              class="skill-icon"
-              src="./assets/skill-icons/react-icon.png"
-              alt="React.js logo"
-            />
+          <div class="col skill-div">
+            <div>
+              <img
+                class="skill-icon"
+                src="./assets/skill-icons/redux-icon.png"
+                alt="Redux logo"
+              />
+            </div>
           </div>
-        </div>
-        <div class="col skill-div">
-          <div>
-            <img
-              class="skill-icon"
-              src="./assets/skill-icons/next-icon.png"
-              alt="Next.js logo"
-            />
-          </div>
-        </div>
-        <div class="col skill-div">
-          <div>
-            <img
-              class="skill-icon"
-              src="./assets/skill-icons/angular-icon.png"
-              alt="Angular logo"
-            />
-          </div>
-        </div>
-      </div>
-      <div class="row g-4 py-5">
-        <div class="col skill-div">
-          <div>
-            <img
-              class="skill-icon"
-              src="./assets/skill-icons/tailwind-icon.svg"
-              alt="Tailwind logo"
-            />
-          </div>
-        </div>
-        <div class="col skill-div">
-          <div>
-            <img
-              class="skill-icon"
-              src="./assets/skill-icons/redux-icon.png"
-              alt="Redux logo"
-            />
-          </div>
-        </div>
-        <div class="col skill-div">
-          <div>
-            <img
-              class="skill-icon"
-              src="./assets/skill-icons/storybook-icon.png"
-              alt="Storybook logo"
-            />
+          <div class="col skill-div">
+            <div>
+              <img
+                class="skill-icon"
+                src="./assets/skill-icons/storybook-icon.png"
+                alt="Storybook logo"
+              />
+            </div>
           </div>
         </div>
       </div>
     </div>
     <!-- Projects -->
-    <div id="projects-section" class="container">
-      <!-- Project featurettes -->
-      <hr class="featurette-divider" />
-      <h2 class="w-100 pb-2 border-bottom text-center">Projects</h2>
+    <div>
+      <div id="projects-section" class="container bg-light mt-5 px-5 rounded">
+        <h2 class="w-100 pt-5 pb-4 border-bottom text-center">Projects</h2>
 
-      <div class="row featurette">
-        <div class="col-md-7 order-md-2">
-          <h3 class="featurette-heading fw-normal lh-1">
-            Oh yeah, it’s that good.
-            <span class="text-body-secondary">See for yourself.</span>
-          </h3>
-          <p class="lead">
-            Another featurette? Of course. More placeholder content here to give
-            you an idea of how this layout would work with some actual
-            real-world content in place.
-          </p>
+        <!-- First -->
+        <div class="row featurette pt-2">
+          <div class="col-md-7 order-md-2">
+            <h3 class="featurette-heading fw-normal lh-1">Finance Tracker</h3>
+            <p class="lead">
+              A personal tool to keep track of all expenses and obligations when
+              budgeting.
+            </p>
+            <!-- Technologies -->
+            <p>
+              <span class="font-weight-bold">Technologies: </span>Next.js,
+              JavaScript, HTML, CSS, Material UI, Redux, Electron
+            </p>
+            <!-- Links -->
+            <div class="d-flex gap-2 justify-content-center">
+              <a target="_blank">
+                <button
+                  class="btn btn-outline-secondary d-inline-flex align-items-center"
+                  type="button"
+                >
+                  View Code
+                </button>
+              </a>
+              <a target="_blank">
+                <button
+                  class="btn btn-primary d-inline-flex align-items-center"
+                  type="button"
+                >
+                  Try It
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    class="bi bi-arrow-right arrow-icon"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+                    />
+                  </svg>
+                </button>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-5 order-md-1">
+            <img height="250" width="100%" />
+          </div>
         </div>
-        <div class="col-md-5 order-md-1">
-          <svg
-            class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
-            width="500"
-            height="500"
-            xmlns="http://www.w3.org/2000/svg"
-            role="img"
-            aria-label="Placeholder: 500x500"
-            preserveAspectRatio="xMidYMid slice"
-            focusable="false"
-          >
-            <title>Placeholder</title>
-            <rect
-              width="100%"
-              height="100%"
-              fill="var(--bs-secondary-bg)"
-            ></rect>
-            <text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">
-              500x500
-            </text>
-          </svg>
+
+        <hr class="featurette-divider" />
+
+        <!-- Second -->
+        <div class="row featurette pt-2">
+          <div class="col-md-7">
+            <h3 class="featurette-heading fw-normal lh-1">
+              React Componentization of Figma Design System
+            </h3>
+            <p class="lead">
+              A true front-end project and the passing of the baton from the UX
+              design team to the software development team. These are React
+              components made from a Figma design system.
+            </p>
+            <!-- Technologies -->
+            <p>
+              <span class="font-weight-bold">Technologies: </span>React.js,
+              Storybook, JavaScript, HTML, CSS, Tailwind
+            </p>
+            <!-- Links -->
+            <div class="d-flex gap-2 justify-content-center">
+              <a target="_blank">
+                <button
+                  class="btn btn-outline-secondary d-inline-flex align-items-center"
+                  type="button"
+                >
+                  View Code
+                </button>
+              </a>
+              <a target="_blank">
+                <button
+                  class="btn btn-primary d-inline-flex align-items-center"
+                  type="button"
+                >
+                  Try It
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    class="bi bi-arrow-right arrow-icon"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+                    />
+                  </svg>
+                </button>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-5">
+            <img height="250" width="100%" />
+          </div>
         </div>
+
+        <hr class="featurette-divider" />
+
+        <!-- Third -->
+        <div class="row featurette pt-2">
+          <div class="col-md-7 order-md-2">
+            <h3 class="featurette-heading fw-normal lh-1">
+              Interactive World Map
+            </h3>
+            <p class="lead">
+              A map of the world that uses an API to retrieve country data when
+              the mouse hovers over any country.
+            </p>
+            <!-- Technologies -->
+            <p>
+              <span class="font-weight-bold">Technologies: </span>Angular.js,
+              TypeScript, HTML, CSS, World Bank API
+            </p>
+            <!-- Links -->
+            <div class="d-flex gap-2 justify-content-center">
+              <a target="_blank">
+                <button
+                  class="btn btn-outline-secondary d-inline-flex align-items-center"
+                  type="button"
+                >
+                  View Code
+                </button>
+              </a>
+              <a target="_blank">
+                <button
+                  class="btn btn-primary d-inline-flex align-items-center"
+                  type="button"
+                >
+                  Try It
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    class="bi bi-arrow-right arrow-icon"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+                    />
+                  </svg>
+                </button>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-5 order-md-1">
+            <img height="250" width="100%" />
+          </div>
+        </div>
+
+        <hr class="featurette-divider" />
+
+        <!-- Fourth -->
+        <div class="row featurette pt-2">
+          <div class="col-md-7">
+            <h3 class="featurette-heading fw-normal lh-1">Online Portfolio</h3>
+            <p class="lead">
+              The one-stop shop to showcase my skills and personality. That's
+              right; this very website is one of my personal projects that I
+              built together.
+            </p>
+            <!-- Technologies -->
+            <p>
+              <span class="font-weight-bold">Technologies: </span>JavaScript,
+              HTML, CSS, Bootstrap, SASS, jQuery
+            </p>
+
+            <!-- Links -->
+            <div class="d-flex gap-2 justify-content-center">
+              <a target="_blank">
+                <button
+                  class="btn btn-outline-secondary d-inline-flex align-items-center"
+                  type="button"
+                >
+                  View Code
+                </button>
+              </a>
+              <a target="_blank">
+                <button
+                  class="btn btn-primary d-inline-flex align-items-center"
+                  type="button"
+                >
+                  Try It
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    class="bi bi-arrow-right arrow-icon"
+                    viewBox="0 0 16 16"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+                    />
+                  </svg>
+                </button>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-5">
+            <img height="250" width="100%" />
+          </div>
+        </div>
+
+        <hr class="featurette-divider" />
+
+        <!-- Fifth -->
+        <div class="row featurette">
+          <div class="col-md-7 order-md-2 pt-2">
+            <h3 class="featurette-heading fw-normal lh-1">
+              Web Inventory System
+            </h3>
+            <p class="lead">
+              Customizable inventory system that can be used for different
+              industries.
+            </p>
+            <p>
+              *No deployed example to try out yet, since it's Spring Boot and so
+              can't be run in the browser. But the code can be downloaded and
+              run locally (instructions are in the readme).
+            </p>
+            <!-- Technologies -->
+            <p>
+              <span class="font-weight-bold">Technologies: </span>Thymeleaf,
+              HTML, CSS, Spring Boot, Java, JUnit
+            </p>
+
+            <!-- Links -->
+            <div class="d-flex gap-2 justify-content-center">
+              <a target="_blank">
+                <button
+                  class="btn btn-outline-secondary d-inline-flex align-items-center"
+                  type="button"
+                >
+                  View Code
+                </button>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-5 order-md-1">
+            <img height="250" width="100%" />
+          </div>
+        </div>
+
+        <hr class="featurette-divider" />
       </div>
-
-      <hr class="featurette-divider" />
-
-      <div class="row featurette">
-        <div class="col-md-7">
-          <h3 class="featurette-heading fw-normal lh-1">
-            First featurette heading.
-            <span class="text-body-secondary">It’ll blow your mind.</span>
-          </h3>
-          <p class="lead">
-            Some great placeholder content for the first featurette here.
-            Imagine some exciting prose here.
-          </p>
-        </div>
-        <div class="col-md-5">
-          <svg
-            class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
-            width="500"
-            height="500"
-            xmlns="http://www.w3.org/2000/svg"
-            role="img"
-            aria-label="Placeholder: 500x500"
-            preserveAspectRatio="xMidYMid slice"
-            focusable="false"
-          >
-            <title>Placeholder</title>
-            <rect
-              width="100%"
-              height="100%"
-              fill="var(--bs-secondary-bg)"
-            ></rect>
-            <text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">
-              500x500
-            </text>
-          </svg>
-        </div>
-      </div>
-
-      <hr class="featurette-divider" />
-
-      <div class="row featurette">
-        <div class="col-md-7 order-md-2">
-          <h3 class="featurette-heading fw-normal lh-1">
-            Oh yeah, it’s that good.
-            <span class="text-body-secondary">See for yourself.</span>
-          </h3>
-          <p class="lead">
-            Another featurette? Of course. More placeholder content here to give
-            you an idea of how this layout would work with some actual
-            real-world content in place.
-          </p>
-        </div>
-        <div class="col-md-5 order-md-1">
-          <svg
-            class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
-            width="500"
-            height="500"
-            xmlns="http://www.w3.org/2000/svg"
-            role="img"
-            aria-label="Placeholder: 500x500"
-            preserveAspectRatio="xMidYMid slice"
-            focusable="false"
-          >
-            <title>Placeholder</title>
-            <rect
-              width="100%"
-              height="100%"
-              fill="var(--bs-secondary-bg)"
-            ></rect>
-            <text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">
-              500x500
-            </text>
-          </svg>
-        </div>
-      </div>
-
-      <hr class="featurette-divider" />
-
-      <div class="row featurette">
-        <div class="col-md-7">
-          <h3 class="featurette-heading fw-normal lh-1">
-            And lastly, this one.
-            <span class="text-body-secondary">Checkmate.</span>
-          </h3>
-          <p class="lead">
-            And yes, this is the last block of representative placeholder
-            content. Again, not really intended to be actually read, simply here
-            to give you a better view of what this would look like with some
-            actual content. Your content.
-          </p>
-        </div>
-        <div class="col-md-5">
-          <svg
-            class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
-            width="500"
-            height="500"
-            xmlns="http://www.w3.org/2000/svg"
-            role="img"
-            aria-label="Placeholder: 500x500"
-            preserveAspectRatio="xMidYMid slice"
-            focusable="false"
-          >
-            <title>Placeholder</title>
-            <rect
-              width="100%"
-              height="100%"
-              fill="var(--bs-secondary-bg)"
-            ></rect>
-            <text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">
-              500x500
-            </text>
-          </svg>
-        </div>
-      </div>
-
-      <hr class="featurette-divider" />
-
-      <div class="row featurette">
-        <div class="col-md-7 order-md-2">
-          <h3 class="featurette-heading fw-normal lh-1">
-            Oh yeah, it’s that good.
-            <span class="text-body-secondary">See for yourself.</span>
-          </h3>
-          <p class="lead">
-            Another featurette? Of course. More placeholder content here to give
-            you an idea of how this layout would work with some actual
-            real-world content in place.
-          </p>
-        </div>
-        <div class="col-md-5 order-md-1">
-          <svg
-            class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto"
-            width="500"
-            height="500"
-            xmlns="http://www.w3.org/2000/svg"
-            role="img"
-            aria-label="Placeholder: 500x500"
-            preserveAspectRatio="xMidYMid slice"
-            focusable="false"
-          >
-            <title>Placeholder</title>
-            <rect
-              width="100%"
-              height="100%"
-              fill="var(--bs-secondary-bg)"
-            ></rect>
-            <text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">
-              500x500
-            </text>
-          </svg>
-        </div>
-      </div>
-
-      <hr class="featurette-divider" />
-
-      <!-- /END THE FEATURETTES -->
     </div>
     <!-- About -->
-    <div id="about-section" class="my-5">
+    <div id="about-section" class="my-5 w-100 bg-light">
       <div class="p-5 text-center bg-body-tertiary">
-        <div class="container py-5">
+        <div class="container py-5 shadow p-5 rounded bg-light">
           <h2 class="text-body-emphasis">About Me</h2>
-          <p class="col-lg-8 mx-auto lead">
-            This takes the basic jumbotron above and makes its background
-            edge-to-edge with a <code>.container</code> inside to align content.
-            Similar to above, it's been recreated with built-in grid and utility
-            classes.
+          <p class="col-11 mx-auto lead">
+            I was born and raised in the forests of Oregon, and now live in the
+            deserts of Arizona. I earned my Bachelor in Global Business and
+            Master of Business Administration, then decided that I wanted more,
+            so I also earned a Bachelor in Software Engineering. Armed with
+            these, I am a Front-end Engineer and my weapons of choice are
+            JavaScript and React.js/Next.js, but also have experience with
+            TypeScript and Angular.
           </p>
         </div>
       </div>
     </div>
     <!-- Contact -->
-    <div id="contact-section" class="container d-flex flex-column align-items-center">
-      <h2 class="w-100 pb-2 border-bottom text-center">Connect With Me</h2>
-      <div>
+    <div
+      id="contact-section"
+      class="container d-flex flex-column align-items-center bg-light rounded w-50 py-4 mb-5"
+    >
+      <h2 class="w-75 pb-3 border-bottom text-center">Connect With Me</h2>
+      <div class="mt-3 pb-4">
         <a href="https://github.com/saksben" target="_blank"
           ><img
-            class="contact-icon"
+            class="contact-icon mr-5"
             src="./assets/contact-icons/github-icon.png"
             alt="GitHub logo"
         /></a>
-        <a href="https://www.linkedin.com/in/saksben/"
+        <a href="https://www.linkedin.com/in/saksben/" target="_blank"
           ><img
             class="contact-icon"
             src="./assets/contact-icons/linkedin-icon.png"
             alt="LinkedIn logo"
         /></a>
       </div>
-      <form class="d-flex flex-column" action="https://formspree.io/f/xdoqpdky" method="POST">
+      <form
+        class="d-flex flex-column w-75"
+        action="https://formspree.io/f/xdoqpdky"
+        method="POST"
+      >
         <input
           type="hidden"
           name="_subject"
@@ -434,7 +521,7 @@
           Your message:
           <textarea
             name="message"
-            placeholder="We want you to join the Avengers"
+            placeholder="We want you to join the Avengers."
             required
           ></textarea>
         </label>
@@ -447,8 +534,8 @@
       <footer
         class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"
       >
-        <p class="mb-0 text-body-secondary">© 2024 Benjamin Saks</p>
-        <ul class="nav justify-content-end">
+        <p class="mb-0 text-body-secondary text-white">© 2024 Benjamin Saks</p>
+        <ul class="nav d-flex align-items-center justify-content-end">
           <li class="nav-item">
             <a href="#header-section" class="nav-link px-2 text-body-secondary"
               >Home</a
@@ -477,15 +564,20 @@
             >
           </li>
           <li class="ms-3">
-            <a href="https://github.com/saksben"
-              ><img
-                class="nav-icon"
-                src="./assets/contact-icons/github-icon.png"
-                alt="GitHub logo"
-            /></a>
+            <a href="https://github.com/saksben" target="_blank">
+              <div
+                class="bg-light rounded mr-2 d-flex align-items-center justify-content-center"
+              >
+                <img
+                  class="nav-icon"
+                  src="./assets/contact-icons/github-icon.png"
+                  alt="GitHub logo"
+                />
+              </div>
+            </a>
           </li>
           <li class="ms-3">
-            <a href="https://www.linkedin.com/in/saksben/"
+            <a href="https://www.linkedin.com/in/saksben/" target="_blank"
               ><img
                 class="nav-icon"
                 src="./assets/contact-icons/linkedin-icon.png"
