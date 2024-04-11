@@ -1,14 +1,14 @@
 @media screen and (max-width: 768px) {
   .nav-link,
   .nav-item {
-    border-bottom: solid;
+    border-bottom: solid white;
   }
 }
 
 @media screen and (min-width: 768px) {
   .nav-link,
   .nav-item {
-    border-right: solid;
+    border-right: solid white;
   }
 }
 

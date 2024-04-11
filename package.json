@@ -1,0 +1,16 @@
+{
+  "name": "online-portfolio",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "serve": "cd public && live-server"
+  },
+  "dependencies": {
+    "http-server": "^13.1.0",
+    "live-server": "^1.2.2"
+  },
+  "author": "Benjamin Saks",
+  "license": "ISC"
+}
