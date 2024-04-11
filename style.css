@@ -1,7 +1,15 @@
+html {
+  scroll-behavior: smooth;
+}
+
 @media screen and (max-width: 768px) {
   .nav-link,
   .nav-item {
     border-bottom: solid white;
+  }
+
+  .header-nav {
+    display: none;
   }
 }
 
@@ -10,12 +18,25 @@
   .nav-item {
     border-right: solid white;
   }
+
+  .header-nav {
+    display: block;
+  }
 }
 
 @media screen and (max-width: 576px) {
   .skill-icon {
     margin-bottom: 50px;
   }
+}
+
+.hamburger {
+  height: 70px;
+  width: 70px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  filter: brightness(0) invert(1);
 }
 
 .nav-icon {

@@ -31,15 +31,24 @@
           </a>
         </div>
         <!-- Nav links -->
+        <img
+          class="hamburger d-block d-md-none"
+          src="./assets/hamburger-icon.png"
+          alt="Menu dropdown button"
+        />
         <ul
-          class="nav col-12 col-md-auto mb-2 d-flex flex-column flex-md-row align-items-center justify-content-center mb-md-0"
+          class="header-ul nav col-md-auto mb-2 d-flex flex-column flex-md-row align-items-center justify-content-center mb-md-0"
         >
-          <li><a href="#skills-section" class="nav-link px-2">Skills</a></li>
-          <li>
+          <li class="header-nav">
+            <a href="#skills-section" class="nav-link px-2">Skills</a>
+          </li>
+          <li class="header-nav">
             <a href="#projects-section" class="nav-link px-2">Projects</a>
           </li>
-          <li><a href="#about-section" class="nav-link px-2">About</a></li>
-          <li>
+          <li class="header-nav">
+            <a href="#about-section" class="nav-link px-2">About</a>
+          </li>
+          <li class="header-nav">
             <a
               href="#contact-section"
               class="nav-link px-2 mb-3 mb-md-0 mr-md-2"
@@ -47,7 +56,7 @@
             >
           </li>
           <div class="d-flex flex-row">
-            <li class="ms-3 mb-3 mb-md-0">
+            <li class="header-nav ms-3 mb-3 mb-md-0">
               <a href="https://github.com/saksben" target="_blank"
                 ><div class="mr-2 bg-light rounded">
                   <img
@@ -57,7 +66,7 @@
                   /></div
               ></a>
             </li>
-            <li class="ms-3">
+            <li class="header-nav ms-3">
               <a href="https://www.linkedin.com/in/saksben/" target="_blank"
                 ><img
                   class="nav-icon"
@@ -248,7 +257,7 @@
             </div>
           </div>
           <div class="col-md-5 order-md-1">
-            <img height="250" width="100%" />
+            <img class="border shadow" height="250" width="100%" />
           </div>
         </div>
         <hr class="featurette-divider" />
@@ -302,7 +311,7 @@
             </div>
           </div>
           <div class="col-md-5">
-            <img height="250" width="100%" />
+            <img class="shadow" height="250" width="100%" />
           </div>
         </div>
         <hr class="featurette-divider" />
@@ -359,7 +368,7 @@
           </div>
           <div class="col-md-5 order-md-1">
             <img
-              class="border"
+              class="border shadow"
               height="100%"
               width="100%"
               src="./assets/project-pics/interactive-world-map.png"
@@ -385,7 +394,10 @@
 
             <!-- Links -->
             <div class="d-flex gap-2 justify-content-center mb-3 mb-md-0">
-              <a href="https://github.com/saksben/online-personal-portfolio" target="_blank">
+              <a
+                href="https://github.com/saksben/online-personal-portfolio"
+                target="_blank"
+              >
                 <button
                   class="btn btn-outline-secondary d-inline-flex align-items-center h-100 mr-2"
                   type="button"
@@ -393,7 +405,7 @@
                   View Code
                 </button>
               </a>
-              <a target="_blank">
+              <a href="./online-portfolio.html" target="_blank">
                 <button
                   class="btn btn-primary d-inline-flex align-items-center"
                   type="button"
@@ -417,7 +429,13 @@
             </div>
           </div>
           <div class="col-md-5">
-            <img height="250" width="100%" />
+            <img
+              class="border shadow"
+              height="250"
+              width="100%"
+              src="./assets/project-pics/online-portfolio.png"
+              alt="Screenshot of Online Portfolio project"
+            />
           </div>
         </div>
         <hr class="featurette-divider" />
@@ -443,7 +461,9 @@
             </p>
 
             <!-- Links -->
-            <div class="d-flex gap-2 justify-content-center mb-md-5 mb-3 mb-md-0">
+            <div
+              class="d-flex gap-2 justify-content-center mb-md-5 mb-3 mb-md-0"
+            >
               <a
                 href="https://github.com/saksben/d287-java-frameworks"
                 target="_blank"
@@ -459,7 +479,7 @@
           </div>
           <div class="col-md-5 order-md-1 mb-4 mb-md-0">
             <img
-              class="border"
+              class="border shadow"
               height="250"
               width="100%"
               src="./assets/project-pics/web-inventory-system.png"
@@ -547,7 +567,9 @@
       <footer
         class="d-flex flex-wrap flex-column-reverse flex-md-row justify-content-between align-items-center py-3 my-4 border-top"
       >
-        <p class="mb-0 text-body-secondary text-white">© 2024 Benjamin Saks</p>
+        <p id="footerDate" class="mb-0 text-body-secondary text-white">
+          © 2024 Benjamin Saks
+        </p>
         <ul
           class="nav d-flex flex-column flex-md-row align-items-center justify-content-end"
         >
@@ -580,28 +602,27 @@
           </li>
           <div class="d-flex flex-row">
             <li class="ms-3">
-            <a href="https://github.com/saksben" target="_blank">
-              <div
-                class="bg-light rounded mr-2 d-flex align-items-center justify-content-center"
-              >
-                <img
-                  class="nav-icon"
-                  src="./assets/contact-icons/github-icon.png"
-                  alt="GitHub logo"
-                />
-              </div>
-            </a>
-          </li>
-          <li class="ms-3">
-            <a href="https://www.linkedin.com/in/saksben/" target="_blank"
-              ><img
-                class="nav-icon mb-1"
-                src="./assets/contact-icons/linkedin-icon.png"
-                alt="LinkedIn logo"
-            /></a>
-          </li>
+              <a href="https://github.com/saksben" target="_blank">
+                <div
+                  class="bg-light rounded mr-2 d-flex align-items-center justify-content-center"
+                >
+                  <img
+                    class="nav-icon"
+                    src="./assets/contact-icons/github-icon.png"
+                    alt="GitHub logo"
+                  />
+                </div>
+              </a>
+            </li>
+            <li class="ms-3">
+              <a href="https://www.linkedin.com/in/saksben/" target="_blank"
+                ><img
+                  class="nav-icon mb-1"
+                  src="./assets/contact-icons/linkedin-icon.png"
+                  alt="LinkedIn logo"
+              /></a>
+            </li>
           </div>
-          
         </ul>
       </footer>
     </div>
@@ -619,6 +640,11 @@
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
       integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
       crossorigin="anonymous"
     ></script>
     <script src="./index.js"></script>
