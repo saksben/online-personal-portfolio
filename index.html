@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+  <!-- Head -->
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="cache-control" content="no-cache" />
     <meta http-equiv="expires" content="0" />
     <meta http-equiv="pragma" content="no-cache" />
-    <title>Benjamin Saks - Front-end Engineer</title>
+    <title>Benjamin Saks - Front-end Developer</title>
     <link rel="stylesheet" href="./style.css" />
     <link
       rel="stylesheet"
@@ -14,13 +15,13 @@
       integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
       crossorigin="anonymous"
     />
-    <!-- <link rel="icon" type="image/x-icon" href="/images/favicon.ico"> -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.svg" />
   </head>
   <body class="bg-dark">
-    <!-- Header -->
+    <!-- Header TODO: switch between X when pressed -->
     <div id="header-section" class="container">
       <header
-        class="d-flex flex-wrap flex-sm-row align-items-center justify-content-md-between justify-content-center py-1"
+        class="header-section d-flex flex-wrap flex-sm-row align-items-center justify-content-md-between justify-content-center py-1"
       >
         <!-- Profile pic -->
         <div class="mb-2 mb-md-0">
@@ -84,16 +85,16 @@
     </div>
     <!-- Hero -->
     <div id="hero-section" class="hero-img" alt="Cover photo">
-      <div class="shadow-overlay w-100 position-absolute"></div>
+      <div class="shadow-overlay w-100 h-100 position-absolute"></div>
       <div
         class="hero-main pt-5 text-center bg-body-tertiary rounded-3 position-relative"
       >
         <h1 class="pt-5 mt-2 text-body-emphasis text-white">
           Hello, I'm Benjamin
         </h1>
-        <p id="tagline" class="col-lg-8 mx-auto fs-5 text-white">
-          I'm a Front-end Engineer
-        </p>
+        <h4 class="tagline col-lg-8 mx-auto fs-5 text-white">
+          I'm a Front-end Developer
+        </h4>
         <div class="d-inline-flex gap-2 mb-5">
           <button
             class="d-inline-flex align-items-center btn btn-primary btn-lg px-4 rounded-pill"
@@ -217,19 +218,25 @@
         <!-- First -->
         <div class="row featurette pt-2 text-center text-md-left">
           <div class="col-md-7 order-md-2">
-            <h3 class="featurette-heading fw-normal lh-1">Finance Tracker</h3>
+            <h3 class="featurette-heading fw-normal lh-1">
+              Finance Tracker (WIP)
+            </h3>
             <p class="lead">
               A personal tool to keep track of all expenses and obligations when
-              budgeting.
+              budgeting, with alerts, data visualization charts, and the ability
+              to export reports.
             </p>
             <!-- Technologies -->
             <p>
               <span class="font-weight-bold">Technologies: </span>Next.js,
-              JavaScript, HTML, CSS, Material UI, Redux, Electron
+              JavaScript, HTML, CSS, TailwindCSS, Redux.js, Chart.js
             </p>
             <!-- Links -->
             <div class="d-flex gap-2 justify-content-center mb-3 mb-md-0">
-              <a target="_blank">
+              <a
+                href="https://github.com/saksben/finance-tracker"
+                target="_blank"
+              >
                 <button
                   class="btn btn-outline-secondary d-inline-flex align-items-center h-100 mr-2"
                   type="button"
@@ -237,7 +244,7 @@
                   View Code
                 </button>
               </a>
-              <a target="_blank">
+              <a href="./finance-tracker.html" target="_blank">
                 <button
                   class="btn btn-primary d-inline-flex align-items-center"
                   type="button"
@@ -261,7 +268,7 @@
             </div>
           </div>
           <div class="col-md-5 order-md-1">
-            <img class="border shadow" height="250" width="100%" />
+            <img class="border shadow" height="" width="100%" src="" alt="Screenshot of Finance Tracker project"/>
           </div>
         </div>
         <hr class="featurette-divider" />
@@ -269,7 +276,7 @@
         <div class="row featurette pt-2 text-center text-md-left">
           <div class="col-md-7">
             <h3 class="featurette-heading fw-normal lh-1">
-              React Components of Figma Design System
+              Moon.io Component Design System
             </h3>
             <p class="lead">
               A true front-end project and the passing of the baton from the UX
@@ -279,11 +286,14 @@
             <!-- Technologies -->
             <p>
               <span class="font-weight-bold">Technologies: </span>React.js,
-              Storybook, JavaScript, HTML, CSS, Tailwind
+              Storybook.js, JavaScript, HTML, CSS, TailwindCSS, Vite
             </p>
             <!-- Links -->
             <div class="d-flex gap-2 justify-content-center mb-3 mb-md-0">
-              <a target="_blank">
+              <a
+                href="https://github.com/saksben/moon-design-system"
+                target="_blank"
+              >
                 <button
                   class="btn btn-outline-secondary d-inline-flex align-items-center h-100 mr-2"
                   type="button"
@@ -291,7 +301,10 @@
                   View Code
                 </button>
               </a>
-              <a target="_blank">
+              <a
+                href="https://663c2588302bd8a99f19c4bd-jwbhyqceek.chromatic.com/"
+                target="_blank"
+              >
                 <button
                   class="btn btn-primary d-inline-flex align-items-center"
                   type="button"
@@ -315,7 +328,13 @@
             </div>
           </div>
           <div class="col-md-5">
-            <img class="shadow" height="250" width="100%" />
+            <img
+              class="border shadow"
+              height=""
+              width="100%"
+              src="./assets/project-pics/moon-design-system.png"
+              alt="Screenshot of Moon Design System project"
+            />
           </div>
         </div>
         <hr class="featurette-divider" />
@@ -373,7 +392,7 @@
           <div class="col-md-5 order-md-1">
             <img
               class="border shadow"
-              height="100%"
+              height=""
               width="100%"
               src="./assets/project-pics/interactive-world-map.png"
               alt="Screenshot of Interactive World Map project"
@@ -435,7 +454,7 @@
           <div class="col-md-5">
             <img
               class="border shadow"
-              height="250"
+              height=""
               width="100%"
               src="./assets/project-pics/online-portfolio.png"
               alt="Screenshot of Online Portfolio project"
@@ -484,7 +503,7 @@
           <div class="col-md-5 order-md-1 mb-4 mb-md-0">
             <img
               class="border shadow"
-              height="250"
+              height=""
               width="100%"
               src="./assets/project-pics/web-inventory-system.png"
               alt="Screenshot of Web Inventory System project"
@@ -504,7 +523,7 @@
             deserts of Arizona. I earned my Bachelor in Global Business and
             Master of Business Administration, then decided that I wanted more,
             so I also earned a Bachelor in Software Engineering. Armed with
-            these, I am a Front-end Engineer and my weapons of choice are
+            these, I am a Front-end Developer and my weapons of choice are
             JavaScript and React.js/Next.js, but also have experience with
             TypeScript and Angular.
           </p>
@@ -532,7 +551,7 @@
         /></a>
       </div>
       <form
-        class="d-flex flex-column w-75"
+        class="d-flex flex-column align-items-center w-75"
         action="https://formspree.io/f/xdoqpdky"
         method="POST"
       >
@@ -563,7 +582,7 @@
           ></textarea>
         </label>
         <!-- your other form fields go here -->
-        <button type="submit">Send</button>
+        <button class="submit-button" type="submit">Send</button>
       </form>
     </div>
     <!-- Footer -->
@@ -577,29 +596,29 @@
         <ul
           class="nav d-flex flex-column flex-md-row align-items-center justify-content-end"
         >
-          <li class="nav-item">
+          <li>
             <a href="#header-section" class="nav-link px-2 text-body-secondary"
               >Home</a
             >
           </li>
-          <li class="nav-item">
+          <li>
             <a href="#skills-section" class="nav-link px-2 text-body-secondary"
               >Skills</a
             >
           </li>
-          <li class="nav-item">
+          <li>
             <a
               href="#projects-section"
               class="nav-link px-2 text-body-secondary"
               >Projects</a
             >
           </li>
-          <li class="nav-item">
+          <li>
             <a href="#about-section" class="nav-link px-2 text-body-secondary"
               >About</a
             >
           </li>
-          <li class="nav-item mb-3 mb-md-0 mr-md-2">
+          <li class="mb-3 mb-md-0 mr-md-2">
             <a href="#contact-section" class="nav-link px-2 text-body-secondary"
               >Contact</a
             >
