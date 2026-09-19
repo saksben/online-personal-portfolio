@@ -1,0 +1,50 @@
+---
+interface Props {
+  id: string;
+  /** Small label above the heading, e.g. "01". */
+  index?: string;
+  title: string;
+}
+const { id, index, title } = Astro.props;
+---
+
+<section id={id} aria-labelledby={`${id}-title`} class="dossier-section">
+  <header class="head">
+    {index && <span class="num font-display" aria-hidden="true">{index}</span>}
+    <h2 id={`${id}-title`} class="font-display">{title}</h2>
+    <span class="rule" aria-hidden="true"></span>
+  </header>
+  <slot />
+</section>
+
+<style>
+  .dossier-section {
+    margin-top: clamp(2.5rem, 6vw, 4.5rem);
+    scroll-margin-top: 5rem;
+  }
+  .head {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-bottom: 1.4rem;
+  }
+  .num {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--c-accent);
+  }
+  h2 {
+    margin: 0;
+    font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .rule {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--c-accent), transparent);
+    opacity: 0.6;
+  }
+</style>

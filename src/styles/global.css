@@ -1,0 +1,306 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Chakra Petch", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --color-void: #05060a;
+  --color-ink: #e8ecf4;
+  --color-muted: #a3adc2;
+}
+
+/* Registered so palette changes cross-fade when the active class changes. */
+@property --c-dark {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #0b1626;
+}
+@property --c-mid {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #1f4a75;
+}
+@property --c-accent {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #d4af5a;
+}
+@property --c-glow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #7fb4e8;
+}
+
+/* ─── Class palettes ──────────────────────────────────────────────────────
+   Applied by [data-class] on a wrapper, or by data-active / data-enter on
+   the selector stage / <html>. */
+[data-class="paladin"],
+[data-active="paladin"],
+html[data-enter="paladin"] {
+  --c-dark: #0a1424;
+  --c-mid: #1f4a75;
+  --c-accent: #d9b45f;
+  --c-glow: #7fb4e8;
+  --pattern: repeating-linear-gradient(115deg, transparent 0 46px, rgb(255 255 255 / 0.035) 46px 48px);
+}
+[data-class="archivist"],
+[data-active="archivist"],
+html[data-enter="archivist"] {
+  --c-dark: #14100c;
+  --c-mid: #4a3220;
+  --c-accent: #ffb020;
+  --c-glow: #ff8a1f;
+  --pattern: repeating-linear-gradient(0deg, transparent 0 38px, rgb(255 176 32 / 0.06) 38px 40px),
+    repeating-linear-gradient(90deg, transparent 0 96px, rgb(0 0 0 / 0.25) 96px 98px);
+}
+[data-class="oracle"],
+[data-active="oracle"],
+html[data-enter="oracle"] {
+  --c-dark: #07080f;
+  --c-mid: #262a36;
+  --c-accent: #22d3ee;
+  --c-glow: #a78bfa;
+  --pattern: repeating-linear-gradient(0deg, transparent 0 31px, rgb(34 211 238 / 0.07) 31px 32px),
+    repeating-linear-gradient(90deg, transparent 0 31px, rgb(167 139 250 / 0.06) 31px 32px);
+}
+[data-class="courier"],
+[data-active="courier"],
+html[data-enter="courier"] {
+  --c-dark: #090d0c;
+  --c-mid: #1e2724;
+  --c-accent: #10e08a;
+  --c-glow: #d7dee0;
+  --pattern: repeating-linear-gradient(0deg, transparent 0 3px, rgb(16 224 138 / 0.05) 3px 4px);
+}
+[data-class="worldbuilder"],
+[data-active="worldbuilder"],
+html[data-enter="worldbuilder"] {
+  --c-dark: #0a0928;
+  --c-mid: #4c1d95;
+  --c-accent: #f0abfc;
+  --c-glow: #22d3ee;
+  --pattern: radial-gradient(circle at 20% 30%, rgb(255 255 255 / 0.5) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 70% 60%, rgb(245 197 66 / 0.5) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 45% 85%, rgb(255 255 255 / 0.4) 0 1px, transparent 1.5px);
+}
+
+/* The full backdrop, shared by the class hero, the transition overlay and the
+   page-enter cover so the handoff between them is seamless. */
+[data-class],
+[data-active],
+html[data-enter] {
+  --backdrop: var(--pattern),
+    radial-gradient(120% 80% at 72% 0%, color-mix(in oklab, var(--c-glow) 30%, transparent), transparent 62%),
+    radial-gradient(90% 70% at 8% 100%, color-mix(in oklab, var(--c-accent) 24%, transparent), transparent 58%),
+    linear-gradient(160deg, var(--c-mid), var(--c-dark) 72%);
+}
+
+.class-backdrop {
+  background: var(--backdrop);
+  background-size: auto, 100% 100%, 100% 100%, 100% 100%;
+}
+
+/* ─── Base ────────────────────────────────────────────────────────────────*/
+html {
+  background: var(--color-void);
+  color: var(--color-ink);
+  color-scheme: dark;
+  scroll-behavior: smooth;
+  scrollbar-color: #39415a var(--color-void);
+}
+body {
+  min-height: 100svh;
+  font-family: var(--font-sans);
+  background: var(--color-void);
+  -webkit-font-smoothing: antialiased;
+}
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-display);
+}
+::selection {
+  background: color-mix(in oklab, var(--c-accent, #d9b45f) 45%, transparent);
+}
+:focus-visible {
+  outline: 2px solid var(--c-accent, #d9b45f);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.sr-only-focusable:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.skip-link {
+  position: absolute;
+  z-index: 2000;
+  top: 8px;
+  left: 8px;
+  padding: 8px 14px;
+  background: var(--color-ink);
+  color: #000;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ─── Shared game-UI pieces ───────────────────────────────────────────────*/
+.kicker {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+}
+
+.panel {
+  position: relative;
+  background: color-mix(in oklab, var(--c-dark) 82%, transparent);
+  border: 1px solid color-mix(in oklab, var(--c-accent) 38%, transparent);
+  border-radius: 4px;
+  backdrop-filter: blur(6px);
+}
+/* corner brackets */
+.panel::before,
+.panel::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--c-accent);
+  pointer-events: none;
+}
+.panel::before {
+  top: -2px;
+  left: -2px;
+  border-right: 0;
+  border-bottom: 0;
+}
+.panel::after {
+  right: -2px;
+  bottom: -2px;
+  border-left: 0;
+  border-top: 0;
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.78rem;
+  line-height: 1.2rem;
+  border: 1px solid color-mix(in oklab, var(--c-accent) 45%, transparent);
+  color: color-mix(in oklab, var(--c-accent) 55%, white);
+  background: color-mix(in oklab, var(--c-accent) 9%, transparent);
+  border-radius: 999px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.95rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 3px;
+  border: 1px solid var(--c-accent);
+  color: var(--c-accent);
+  background: transparent;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    box-shadow 0.15s;
+}
+.btn:hover {
+  background: color-mix(in oklab, var(--c-accent) 16%, transparent);
+  box-shadow: 0 0 18px color-mix(in oklab, var(--c-accent) 35%, transparent);
+}
+.btn-primary {
+  background: var(--c-accent);
+  color: #0a0a0f;
+}
+.btn-primary:hover {
+  background: color-mix(in oklab, var(--c-accent) 82%, white);
+  box-shadow: 0 0 22px color-mix(in oklab, var(--c-accent) 55%, transparent);
+}
+.btn[data-disabled] {
+  border-style: dashed;
+  border-color: #48506a;
+  color: #8994ab;
+  cursor: not-allowed;
+  background: transparent;
+  box-shadow: none;
+}
+.btn svg {
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+
+/* Stat bars */
+.stat-row {
+  display: grid;
+  grid-template-columns: minmax(6.5rem, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+}
+.stat-row dt {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+.stat-bar {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 3px;
+  width: 9.5rem;
+}
+.stat-bar span {
+  height: 0.8rem;
+  background: color-mix(in oklab, var(--c-accent) 14%, transparent);
+  transform: skewX(-18deg);
+}
+.stat-bar span.on {
+  background: var(--c-accent);
+  box-shadow: 0 0 8px color-mix(in oklab, var(--c-accent) 60%, transparent);
+}
+
+/* Placeholder-figure palette helpers (see PlaceholderFigure.astro) */
+.f-dark {
+  fill: var(--c-dark);
+}
+.f-mid {
+  fill: var(--c-mid);
+}
+.f-accent {
+  fill: var(--c-accent);
+}
+.f-glow {
+  fill: var(--c-glow);
+}
+.s-accent {
+  stroke: var(--c-accent);
+}
+.s-glow {
+  stroke: var(--c-glow);
+}

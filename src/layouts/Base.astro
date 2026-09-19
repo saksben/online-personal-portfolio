@@ -1,0 +1,104 @@
+---
+import "@fontsource/chakra-petch/500.css";
+import "@fontsource/chakra-petch/600.css";
+import "@fontsource/chakra-petch/700.css";
+import "@fontsource-variable/inter";
+import "@/styles/global.css";
+import "@/styles/transitions.css";
+import { site } from "@/data/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Path of this page, used for the canonical + og:url. Defaults to the current path. */
+  path?: string;
+  /** JSON-LD object to embed. */
+  jsonLd?: Record<string, unknown>;
+  noindex?: boolean;
+  bodyClass?: string;
+}
+
+const {
+  title = site.title,
+  description = site.description,
+  path = Astro.url.pathname,
+  jsonLd,
+  noindex = false,
+  bodyClass,
+} = Astro.props;
+
+const canonical = new URL(path, site.url).href;
+const ogImage = new URL("/og.png", site.url).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#05060a" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    {noindex && <meta name="robots" content="noindex" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+    <!-- Set before first paint so a class page can cover itself with the transition backdrop
+         and hand off seamlessly. Falls back to removing the cover after 4s regardless. -->
+    <script is:inline>
+      (function () {
+        try {
+          const raw = sessionStorage.getItem("tx-enter");
+          if (!raw) return;
+          sessionStorage.removeItem("tx-enter");
+          const p = JSON.parse(raw);
+          if (Date.now() - p.t > 6000) return;
+          if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+          const root = document.documentElement;
+          root.dataset.enter = p.c;
+          setTimeout(() => {
+            delete root.dataset.enter;
+            delete root.dataset.enterDone;
+          }, 4000);
+        } catch {
+          /* storage unavailable: no enter animation */
+        }
+      })();
+    </script>
+  </head>
+  <body class={bodyClass}>
+    <a href="#main" class="skip-link sr-only-focusable">Skip to content</a>
+    <slot />
+    <script>
+      // Page-enter handoff: fade the cover out once the page has painted.
+      const root = document.documentElement;
+      if (root.dataset.enter) {
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => {
+            root.dataset.enterDone = "";
+            setTimeout(() => {
+              delete root.dataset.enter;
+              delete root.dataset.enterDone;
+            }, 900);
+          }),
+        );
+      }
+    </script>
+  </body>
+</html>

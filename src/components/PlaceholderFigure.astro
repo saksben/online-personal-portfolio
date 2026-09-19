@@ -1,0 +1,346 @@
+---
+/**
+ * Designed placeholder silhouettes. Each keeps the final composition (same
+ * 3:5 canvas, feet near the bottom, signature props in the same places) so the
+ * real art can replace it without layout changes. Colors come from the
+ * enclosing [data-class] palette.
+ */
+import type { ClassId } from "@/data/characters";
+
+interface Props {
+  id: ClassId;
+  label?: string;
+}
+const { id, label } = Astro.props;
+---
+
+<svg
+  class="figure"
+  viewBox="0 0 300 500"
+  preserveAspectRatio="xMidYMax meet"
+  role={label ? "img" : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : "true"}
+  focusable="false"
+>
+  <defs>
+    <linearGradient id={`body-${id}`} x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="var(--c-mid)"></stop>
+      <stop offset="1" stop-color="var(--c-dark)"></stop>
+    </linearGradient>
+  </defs>
+
+  {
+    id === "paladin" && (
+      <g>
+        <ellipse cx="150" cy="484" rx="86" ry="9" class="ground"></ellipse>
+        {/* cloak */}
+        <path d="M112 140 L82 330 L120 318 L150 340 L182 318 L218 330 L190 140 Z" class="f-dark" opacity="0.75" />
+        {/* legs + boots */}
+        <path d="M119 268 h32 l-2 196 h-34 z" fill={`url(#body-${id})`} />
+        <path d="M149 268 h32 l6 196 h-34 z" fill={`url(#body-${id})`} />
+        <path d="M108 462 h44 l3 18 h-54 z M148 462 h44 l3 18 h-54 z" class="f-dark" />
+        {/* torso + tabard */}
+        <path d="M106 138 Q150 120 194 138 L188 272 L112 272 Z" fill={`url(#body-${id})`} />
+        <path d="M138 150 h24 l8 118 h-40 z" class="f-accent" opacity="0.85" />
+        <rect x="110" y="256" width="80" height="12" class="f-dark" />
+        <rect x="140" y="257" width="20" height="10" class="f-accent" />
+        {/* pouches + rope */}
+        <rect x="116" y="270" width="18" height="20" rx="3" class="f-dark" />
+        <rect x="168" y="270" width="18" height="20" rx="3" class="f-dark" />
+        <path d="M118 176 Q150 210 184 172" fill="none" class="s-accent" stroke-width="3" opacity="0.7" />
+        {/* pauldrons */}
+        <ellipse cx="106" cy="142" rx="24" ry="17" class="f-mid" />
+        <ellipse cx="194" cy="142" rx="24" ry="17" class="f-mid" />
+        <path d="M84 142 q22 -22 44 0 M172 142 q22 -22 44 0" fill="none" class="s-accent" stroke-width="3" />
+        {/* arms */}
+        <path d="M84 150 L70 230 L86 268 L100 262 L98 226 L112 160 Z" fill={`url(#body-${id})`} />
+        <path d="M216 150 L232 226 L220 268 L206 262 L204 226 L188 160 Z" fill={`url(#body-${id})`} />
+        {/* head + helm */}
+        <path d="M126 98 a24 26 0 0 1 48 0 v14 h-48 z" class="f-mid" />
+        <rect x="132" y="98" width="36" height="6" rx="3" class="f-dark" />
+        <path d="M150 62 q10 -8 8 14 h-16 q-2 -22 8 -14 z" class="f-accent" />
+        {/* shield */}
+        <path d="M34 190 h58 v54 q0 34 -29 50 q-29 -16 -29 -50 z" class="f-mid" />
+        <path d="M63 190 v104 M34 236 h58" fill="none" class="s-accent" stroke-width="3" />
+        <path d="M34 190 h58 v54 q0 34 -29 50 q-29 -16 -29 -50 z" fill="none" class="s-accent" stroke-width="3" />
+        {/* sword */}
+        <g class="sword">
+          <path d="M228 42 l9 12 v210 h-18 v-210 z" class="f-glow" opacity="0.92" />
+          <rect x="208" y="262" width="58" height="9" rx="3" class="f-accent" />
+          <rect x="223" y="271" width="10" height="34" rx="3" class="f-dark" />
+          <circle cx="228" cy="311" r="8" class="f-accent" />
+        </g>
+      </g>
+    )
+  }
+
+  {
+    id === "archivist" && (
+      <g>
+        <ellipse cx="150" cy="484" rx="96" ry="10" class="ground"></ellipse>
+        {/* legs + heavy boots */}
+        <path d="M112 270 h36 l-2 192 h-38 z" fill={`url(#body-${id})`} />
+        <path d="M152 270 h36 l6 192 h-38 z" fill={`url(#body-${id})`} />
+        <path d="M100 458 h50 l3 22 h-60 z M150 458 h50 l3 22 h-60 z" class="f-dark" />
+        <rect x="104" y="456" width="44" height="8" class="f-accent" opacity="0.8" />
+        <rect x="152" y="456" width="44" height="8" class="f-accent" opacity="0.8" />
+        {/* broad torso */}
+        <path d="M98 142 Q150 122 202 142 L196 276 L104 276 Z" fill={`url(#body-${id})`} />
+        <rect x="104" y="258" width="92" height="14" class="f-dark" />
+        <circle cx="150" cy="265" r="6" class="f-accent" />
+        {/* schema runes */}
+        <g class="f-accent" opacity="0.95">
+          <rect x="120" y="168" width="22" height="16" rx="2" fill="none" class="s-accent" stroke-width="2.5" />
+          <path d="M120 176 h22 M131 168 v16" class="s-accent" stroke-width="2" fill="none" />
+          <circle cx="170" cy="176" r="6" fill="none" class="s-accent" stroke-width="2.5" />
+          <path d="M142 176 h22" class="s-accent" stroke-width="2.5" fill="none" />
+          <path d="M132 208 l10 -10 l10 10 l-10 10 z" fill="none" class="s-accent" stroke-width="2.5" />
+          <path d="M162 200 v16 M162 208 h16" class="s-accent" stroke-width="2.5" fill="none" />
+        </g>
+        {/* pipes */}
+        <path d="M108 150 v100 M196 150 v40" fill="none" class="s-accent" stroke-width="4" opacity="0.4" />
+        {/* left arm + lantern */}
+        <path d="M98 150 L74 224 L84 282 L102 278 L100 230 L112 160 Z" fill={`url(#body-${id})`} />
+        <rect x="76" y="292" width="14" height="6" rx="2" class="f-dark" />
+        <path d="M83 298 v20" stroke="var(--c-accent)" stroke-width="2" fill="none" />
+        <rect x="68" y="318" width="30" height="40" rx="7" class="f-dark" />
+        <rect x="73" y="323" width="20" height="30" rx="5" class:list={["f-glow", "lamp"]} />
+        <circle cx="83" cy="338" r="30" class="f-glow" opacity="0.18" />
+        {/* drill arm */}
+        <path d="M202 146 q26 6 36 40 l4 40 h-40 z" class="f-mid" />
+        <rect x="200" y="216" width="50" height="76" rx="8" class="f-dark" />
+        <rect x="204" y="222" width="42" height="10" class="f-accent" opacity="0.85" />
+        <rect x="204" y="268" width="42" height="10" class="f-accent" opacity="0.85" />
+        <g class="drill">
+          <path d="M206 292 h38 l-19 92 z" class="f-accent" />
+          <path d="M209 306 l32 -8 M211 324 l26 -8 M214 342 l20 -8 M217 360 l14 -8" fill="none" stroke="var(--c-dark)" stroke-width="3" />
+        </g>
+        {/* head + goggles on forehead */}
+        <rect x="128" y="74" width="44" height="46" rx="18" class="f-mid" />
+        <path d="M122 86 h56 v-8 a28 24 0 0 0 -56 0 z" class="f-dark" />
+        <rect x="124" y="84" width="52" height="7" rx="3" class="f-accent" opacity="0.9" />
+        <circle cx="139" cy="86" r="9" class="f-dark" />
+        <circle cx="161" cy="86" r="9" class="f-dark" />
+        <circle cx="139" cy="86" r="5.5" class="f-glow" />
+        <circle cx="161" cy="86" r="5.5" class="f-glow" />
+        <rect x="136" y="106" width="28" height="6" rx="3" class="f-dark" opacity="0.7" />
+      </g>
+    )
+  }
+
+  {
+    id === "oracle" && (
+      <g>
+        <ellipse cx="150" cy="484" rx="80" ry="8" class="ground"></ellipse>
+        {/* legs */}
+        <path d="M120 266 h30 l-3 198 h-30 z" fill={`url(#body-${id})`} />
+        <path d="M150 266 h30 l3 198 h-30 z" fill={`url(#body-${id})`} />
+        <path d="M113 462 h37 l3 18 h-48 z M150 462 h37 l3 18 h-48 z" class="f-dark" />
+        <path d="M122 300 v100 M178 300 v100" fill="none" class="s-accent" stroke-width="2" opacity="0.75" />
+        {/* torso */}
+        <path d="M108 140 Q150 126 192 140 L184 272 L116 272 Z" fill={`url(#body-${id})`} />
+        <path d="M150 140 v128 M126 176 h48 M132 216 h36" fill="none" class="s-accent" stroke-width="2.5" opacity="0.9" />
+        <circle cx="150" cy="196" r="10" class="f-glow" opacity="0.9" />
+        {/* shoulder plates */}
+        <path d="M82 148 l26 -14 l14 24 l-24 12 z" class="f-mid" />
+        <path d="M218 148 l-26 -14 l-14 24 l24 12 z" class="f-mid" />
+        <path d="M86 150 l22 -11 M214 150 l-22 -11" class="s-glow" stroke-width="2.5" fill="none" />
+        {/* arms */}
+        <path d="M88 154 L74 236 L92 274 L106 268 L102 232 L114 162 Z" fill={`url(#body-${id})`} />
+        <path d="M212 154 L226 236 L208 274 L194 268 L198 232 L186 162 Z" fill={`url(#body-${id})`} />
+        <rect x="80" y="238" width="22" height="9" class="f-accent" opacity="0.85" />
+        {/* helmet + visor */}
+        <path d="M124 100 a26 30 0 0 1 52 0 v16 q0 12 -12 12 h-28 q-12 0 -12 -12 z" class="f-mid" />
+        <path d="M130 100 h40 v12 q0 6 -8 6 h-24 q-8 0 -8 -6 z" class="f-dark" />
+        <rect x="134" y="102" width="32" height="6" rx="3" class="f-accent" />
+        <path d="M150 66 v14" class="s-glow" stroke-width="3" />
+        {/* AI shard + orbit */}
+        <g class="shard">
+          <ellipse cx="238" cy="150" rx="40" ry="12" fill="none" class="s-glow" stroke-width="1.5" opacity="0.5" />
+          <path d="M238 88 l22 40 l-22 52 l-22 -52 z" class="f-accent" opacity="0.9" />
+          <path d="M238 88 l22 40 h-44 z" class="f-glow" opacity="0.95" />
+          <path d="M238 108 l9 20 l-9 24 l-9 -24 z" fill="#fff" opacity="0.65" />
+          <circle cx="204" cy="100" r="3.5" class="f-accent" />
+          <circle cx="276" cy="168" r="3" class="f-glow" />
+          <path d="M238 182 l-28 90 h56 z" class="f-accent" opacity="0.1" />
+        </g>
+      </g>
+    )
+  }
+
+  {
+    id === "courier" && (
+      <g>
+        <ellipse cx="150" cy="484" rx="82" ry="8" class="ground"></ellipse>
+        {/* legs (lean) */}
+        <path d="M124 266 h26 l-4 198 h-26 z" fill={`url(#body-${id})`} />
+        <path d="M150 266 h26 l4 198 h-26 z" fill={`url(#body-${id})`} />
+        <path d="M118 462 h34 l3 18 h-46 z M148 462 h34 l3 18 h-46 z" class="f-dark" />
+        <rect x="120" y="440" width="28" height="4" class="f-accent" opacity="0.8" />
+        <rect x="152" y="440" width="28" height="4" class="f-accent" opacity="0.8" />
+        {/* torso + harness */}
+        <path d="M114 140 Q150 128 186 140 L180 272 L120 272 Z" fill={`url(#body-${id})`} />
+        <path d="M118 146 L178 262 M182 146 L122 262" fill="none" class="s-accent" stroke-width="3" opacity="0.85" />
+        <rect x="116" y="252" width="68" height="12" class="f-dark" />
+        <rect x="130" y="254" width="12" height="8" class="f-accent" />
+        <rect x="158" y="254" width="12" height="8" class="f-accent" />
+        {/* arms */}
+        <path d="M112 148 L88 226 L98 274 L112 270 L110 232 L122 158 Z" fill={`url(#body-${id})`} />
+        <path d="M188 148 L212 226 L204 262 L190 258 L190 232 L178 158 Z" fill={`url(#body-${id})`} />
+        {/* spy watch + hologram */}
+        <rect x="84" y="252" width="26" height="18" rx="4" class="f-dark" />
+        <rect x="88" y="255" width="18" height="12" rx="2" class="f-accent" />
+        <path d="M84 250 l-18 -46 h60 l-14 46 z" class="f-accent" opacity="0.12" />
+        <rect x="70" y="196" width="46" height="30" rx="3" fill="none" class="s-accent" stroke-width="2" opacity="0.9" />
+        <path d="M76 206 h26 M76 214 h34 M76 222 h18" class="s-accent" stroke-width="2" fill="none" opacity="0.9" />
+        {/* apple gadget */}
+        <g class="apple">
+          <path d="M214 244 c-14 -8 -30 4 -26 24 c4 16 14 22 22 18 c4 -2 8 -2 12 0 c8 4 18 -2 22 -18 c4 -20 -12 -32 -26 -24 z" class="f-glow" />
+          <path d="M214 244 q0 -14 12 -18" fill="none" class="s-accent" stroke-width="3" />
+          <ellipse cx="228" cy="226" rx="9" ry="5" transform="rotate(-25 228 226)" class="f-accent" />
+          <circle cx="214" cy="268" r="6" class="f-dark" opacity="0.8" />
+        </g>
+        {/* head + hood/headset */}
+        <path d="M128 100 a22 26 0 0 1 44 0 v14 q0 10 -10 10 h-24 q-10 0 -10 -10 z" class="f-mid" />
+        <path d="M126 92 q24 -30 48 0 v10 h-48 z" class="f-dark" />
+        <rect x="134" y="102" width="32" height="7" rx="3.5" class="f-accent" opacity="0.9" />
+        <path d="M170 104 q16 4 10 24" fill="none" class="s-accent" stroke-width="3" />
+        {/* robot companion */}
+        <g class="bot">
+          <rect x="30" y="432" width="46" height="34" rx="14" class="f-mid" />
+          <path d="M30 442 a23 14 0 0 1 46 0 z" class="f-glow" opacity="0.9" />
+          <circle cx="44" cy="452" r="4" class="f-dark" />
+          <circle cx="62" cy="452" r="4" class="f-dark" />
+          <path d="M40 432 l-6 -14 M66 432 l6 -14" class="s-accent" stroke-width="3" fill="none" />
+          <rect x="34" y="466" width="14" height="8" rx="3" class="f-dark" />
+          <rect x="58" y="466" width="14" height="8" rx="3" class="f-dark" />
+        </g>
+      </g>
+    )
+  }
+
+  {
+    id === "worldbuilder" && (
+      <g>
+        <ellipse cx="150" cy="484" rx="90" ry="9" class="ground"></ellipse>
+        {/* halo rings */}
+        <ellipse cx="150" cy="150" rx="118" ry="118" fill="none" class="s-accent" stroke-width="1.5" opacity="0.4" />
+        <ellipse cx="150" cy="150" rx="118" ry="38" fill="none" class="s-glow" stroke-width="1.5" opacity="0.4" transform="rotate(-24 150 150)" />
+        {/* long coat */}
+        <path d="M110 138 Q150 122 190 138 L204 442 Q150 458 96 442 Z" fill={`url(#body-${id})`} />
+        <path d="M150 142 v304" class="s-accent" stroke-width="2.5" opacity="0.8" fill="none" />
+        <path d="M100 400 Q150 416 200 400" class="s-glow" stroke-width="3" opacity="0.7" fill="none" />
+        <path d="M110 440 h80" class="s-accent" stroke-width="4" opacity="0.9" />
+        <rect x="112" y="252" width="76" height="10" class="f-dark" />
+        <rect x="140" y="251" width="20" height="12" class="f-accent" />
+        {/* boots */}
+        <path d="M112 452 h34 l2 26 h-46 z M154 452 h34 l12 26 h-46 z" class="f-dark" />
+        {/* shoulders + arms */}
+        <path d="M88 152 q22 -20 44 -8 v14 h-40 z" class="f-mid" />
+        <path d="M212 152 q-22 -20 -44 -8 v14 h40 z" class="f-mid" />
+        <path d="M90 154 L76 236 L92 256 L106 250 L102 224 L114 160 Z" fill={`url(#body-${id})`} />
+        <path d="M210 154 L232 214 L222 244 L208 238 L206 216 L188 160 Z" fill={`url(#body-${id})`} />
+        {/* head + hood */}
+        <circle cx="150" cy="98" r="24" class="f-mid" />
+        <path d="M122 100 q4 -42 28 -42 q24 0 28 42 q-14 -14 -28 -14 q-14 0 -28 14 z" class="f-dark" />
+        <path d="M138 104 h24" class="s-glow" stroke-width="3" opacity="0.9" />
+        {/* architect's compass */}
+        <g class="compass">
+          <circle cx="226" cy="218" r="5" class="f-accent" />
+          <path d="M226 218 L202 320 M226 218 L252 320" fill="none" class="s-accent" stroke-width="5" stroke-linecap="round" />
+          <path d="M202 320 l-2 10 M252 320 l2 10" class="s-glow" stroke-width="3" stroke-linecap="round" />
+          <path d="M202 330 A34 34 0 0 1 254 330" fill="none" class="s-glow" stroke-width="2" opacity="0.8" stroke-dasharray="4 4" />
+          <path d="M214 270 h24" class="s-accent" stroke-width="3" />
+        </g>
+        {/* floating world fragments */}
+        <g class="fragments">
+          <path d="M40 96 l22 -12 l22 12 v24 l-22 12 l-22 -12 z" class="f-glow" opacity="0.85" />
+          <path d="M40 96 l22 12 l22 -12 M62 108 v24" fill="none" stroke="var(--c-dark)" stroke-width="2" />
+          <path d="M238 60 l16 28 h-32 z" class="f-accent" opacity="0.9" />
+          <path d="M24 300 h34 v20 h-34 z M32 290 h18 v10 h-18 z" class="f-mid" />
+          <path d="M24 300 h34" class="s-accent" stroke-width="3" />
+          <path d="M256 330 l14 -20 l14 20 l-14 20 z" class="f-glow" opacity="0.8" />
+          <circle cx="270" cy="220" r="5" class="f-accent" />
+          <circle cx="30" cy="200" r="4" class="f-glow" />
+          <circle cx="60" cy="44" r="2.5" class="f-accent" />
+        </g>
+      </g>
+    )
+  }
+</svg>
+
+<style>
+  .figure {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    /* rim light so dark silhouettes separate from the backdrop */
+    filter: drop-shadow(0 0 1.5px color-mix(in oklab, var(--c-accent) 75%, transparent));
+  }
+  .ground {
+    fill: var(--c-glow);
+    opacity: 0.18;
+  }
+  .figure :global(.f-glow),
+  .figure :global(.s-glow) {
+    filter: drop-shadow(0 0 6px color-mix(in oklab, var(--c-glow) 70%, transparent));
+  }
+  .lamp {
+    animation: flicker 3.2s steps(1) infinite;
+  }
+  .shard {
+    animation: orbit 4.5s ease-in-out infinite;
+  }
+  .fragments {
+    animation: drift 6s ease-in-out infinite;
+  }
+  .drill,
+  .compass,
+  .bot,
+  .apple {
+    transform-box: fill-box;
+    transform-origin: 50% 0;
+  }
+  .drill {
+    animation: rattle 0.5s linear infinite;
+  }
+  .bot {
+    transform-origin: 50% 100%;
+    animation: hop 2.4s ease-in-out infinite;
+  }
+  .compass {
+    transform-origin: 50% 0;
+    animation: sway 3.8s ease-in-out infinite;
+  }
+  @keyframes flicker {
+    0%, 100% { opacity: 1; }
+    60% { opacity: 0.75; }
+    64% { opacity: 1; }
+  }
+  @keyframes orbit {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-6px, -12px); }
+  }
+  @keyframes drift {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-9px); }
+  }
+  @keyframes rattle {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(1.5px); }
+  }
+  @keyframes hop {
+    0%, 70%, 100% { transform: translateY(0); }
+    80% { transform: translateY(-8px); }
+  }
+  @keyframes sway {
+    0%, 100% { transform: rotate(-2deg); }
+    50% { transform: rotate(2deg); }
+  }
+  /* Animate only on the active slot / class hero to keep idle rows calm. */
+  :global(li:not([data-current="true"])) .figure *,
+  :global(body[data-transition]) .figure * {
+    animation-play-state: paused !important;
+  }
+</style>

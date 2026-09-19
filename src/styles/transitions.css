@@ -1,0 +1,119 @@
+/* Transition overlay (built at runtime by src/scripts/transitions.ts) and the
+   page-enter cover set up in Base.astro. Everything is driven by WAAPI or the
+   state attributes below, so it can be tuned here without touching the logic. */
+
+.tx-root {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow: hidden;
+  touch-action: none;
+  cursor: progress;
+}
+.tx-backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--backdrop);
+  background-size: auto, 100% 100%, 100% 100%, 100% 100%;
+}
+/* Snapshot of the selector, split into two clipped halves */
+.tx-half {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  will-change: transform;
+}
+.tx-snap {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+}
+.tx-fx {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.tx-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+}
+.tx-glow-line {
+  fill: none;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.tx-line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.tx-node {
+  fill: var(--c-accent);
+  filter: drop-shadow(0 0 6px var(--c-glow));
+}
+.tx-hud-frame {
+  position: absolute;
+  border: 2px solid var(--c-accent);
+  border-radius: 6px;
+  box-shadow:
+    0 0 18px color-mix(in oklab, var(--c-accent) 45%, transparent),
+    inset 0 0 18px color-mix(in oklab, var(--c-accent) 20%, transparent);
+}
+.tx-hud-text {
+  position: absolute;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  font-size: clamp(0.7rem, 1.4vw, 1rem);
+  color: var(--c-accent);
+  text-shadow: 0 0 10px var(--c-accent);
+  opacity: 0;
+}
+.tx-scan {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, rgb(0 0 0 / 0.28) 3px 4px);
+  pointer-events: none;
+}
+
+/* Selector reacts to the transition state */
+body[data-transition] {
+  overflow: hidden;
+}
+
+/* ─── Page-enter cover (class pages) ──────────────────────────────────────*/
+html[data-enter]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--backdrop);
+  background-size: auto, 100% 100%, 100% 100%, 100% 100%;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.65s ease-out;
+}
+html[data-enter][data-enter-done]::before {
+  opacity: 0;
+}
+html[data-enter] .rise {
+  animation: rise 0.7s 0.15s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

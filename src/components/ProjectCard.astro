@@ -1,0 +1,195 @@
+---
+import { Image } from "astro:assets";
+import { STATUS_LABEL, type Project } from "@/data/projects";
+import { projectImage } from "@/lib/assets";
+
+interface Props {
+  project: Project;
+}
+const { project: p } = Astro.props;
+const image = projectImage(p.image);
+const initials = p.title
+  .split(/\s+/)
+  .filter((w) => /^[A-Za-z]/.test(w))
+  .slice(0, 2)
+  .map((w) => w[0])
+  .join("")
+  .toUpperCase();
+---
+
+<article class="card panel" data-status={p.status}>
+  <div class="media" aria-hidden={image ? undefined : "true"}>
+    {
+      image ? (
+        <Image src={image} alt={`Screenshot of ${p.title}`} width={720} loading="lazy" class="shot" />
+      ) : (
+        <div class="placeholder class-backdrop">
+          <span class="initials font-display">{initials}</span>
+          <span class="soon">{p.status === "complete" ? "" : "Screenshot pending"}</span>
+        </div>
+      )
+    }
+  </div>
+
+  <div class="body">
+    <div class="meta">
+      <span class="status" data-status={p.status}>{STATUS_LABEL[p.status]}</span>
+      <span class="capability">{p.capability}</span>
+    </div>
+    <h3 class="title">{p.title}</h3>
+    <p class="summary">{p.summary}</p>
+    <ul class="tech" aria-label="Technologies">
+      {p.tech.map((t) => <li class="chip">{t}</li>)}
+    </ul>
+    {p.note && <p class="note">{p.note}</p>}
+  </div>
+
+  <div class="links">
+    {
+      p.repo ? (
+        <a class="btn" href={p.repo} target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.05-.49.05-.49.8.06 1.23.83 1.23.83.71 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+          </svg>
+          Source<span class="sr-only"> for {p.title} on GitHub</span>
+        </a>
+      ) : (
+        <span class="btn" data-disabled title="Repository not published yet">
+          Source · soon
+        </span>
+      )
+    }
+    {
+      p.stackblitz ? (
+        <a class="btn btn-primary" href={p.stackblitz} target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M2 9h5l-2 7 9-10H9l2-6z" />
+          </svg>
+          Try on StackBlitz<span class="sr-only"> ({p.title})</span>
+        </a>
+      ) : (
+        <span class="btn" data-disabled title="Demo not available yet">
+          Demo · soon
+        </span>
+      )
+    }
+    {
+      p.live && (
+        <a class="btn" href={p.live} target="_blank" rel="noopener noreferrer">
+          Live demo<span class="sr-only"> ({p.title})</span>
+        </a>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 100%;
+  }
+  .media {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-bottom: 1px solid color-mix(in oklab, var(--c-accent) 25%, transparent);
+  }
+  .shot {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+  .placeholder {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 0.25rem;
+    height: 100%;
+  }
+  .initials {
+    font-size: 2.6rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: color-mix(in oklab, var(--c-accent) 70%, white);
+    opacity: 0.85;
+  }
+  .soon {
+    min-height: 1rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .body {
+    flex: 1;
+    padding: 1rem 1.15rem 0.5rem;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.75rem;
+    font-size: 0.78rem;
+  }
+  .status {
+    padding: 0.1rem 0.55rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    background: color-mix(in oklab, var(--c-accent) 18%, transparent);
+    color: var(--c-accent);
+  }
+  .status[data-status="complete"] {
+    background: var(--c-accent);
+    color: #0a0a0f;
+  }
+  .capability {
+    color: var(--color-muted);
+  }
+  .title {
+    margin: 0.55rem 0 0.4rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .summary {
+    margin: 0 0 0.75rem;
+    font-size: 0.93rem;
+    line-height: 1.55;
+    color: #c9d0e0;
+  }
+  .tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .note {
+    margin: 0.75rem 0 0;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--color-muted);
+    border-left: 2px solid color-mix(in oklab, var(--c-accent) 50%, transparent);
+    padding-left: 0.6rem;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.9rem 1.15rem 1.1rem;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>

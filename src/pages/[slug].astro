@@ -1,0 +1,534 @@
+---
+import { Image } from "astro:assets";
+import Base from "@/layouts/Base.astro";
+import CharacterArt from "@/components/CharacterArt.astro";
+import ProjectCard from "@/components/ProjectCard.astro";
+import Section from "@/components/Section.astro";
+import StatBars from "@/components/StatBars.astro";
+import { characters, type Character } from "@/data/characters";
+import { projectsFor } from "@/data/projects";
+import { resume } from "@/data/resume";
+import { site } from "@/data/site";
+import { characterArt, skillIcon } from "@/lib/assets";
+
+export function getStaticPaths() {
+  return characters.map((character) => ({ params: { slug: character.id }, props: { character } }));
+}
+
+interface Props {
+  character: Character;
+}
+const { character: c } = Astro.props;
+
+const index = characters.findIndex((x) => x.id === c.id);
+const prev = characters[(index - 1 + characters.length) % characters.length];
+const next = characters[(index + 1) % characters.length];
+
+const all = projectsFor(c.id);
+const completed = all.filter((p) => p.status === "complete");
+const questBoard = all.filter((p) => p.status !== "complete");
+const experience = resume.experience.filter((e) => e.classes.includes(c.id));
+const bg = characterArt(c.id, "bg");
+
+let n = 0;
+const num = () => String(++n).padStart(2, "0");
+
+const path = `/${c.id}/`;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: site.name, item: `${site.url}/` },
+    { "@type": "ListItem", position: 2, name: `${c.name} — ${c.discipline}`, item: `${site.url}${path}` },
+  ],
+};
+---
+
+<Base
+  title={`${c.name} — ${c.discipline} | ${site.name}`}
+  description={`${c.discipline} projects by ${site.name}: ${all.map((p) => p.title).join(", ")}. Source code and live demos.`}
+  path={path}
+  jsonLd={jsonLd}
+>
+  <div class="dossier" data-class={c.id}>
+    <header class="topbar">
+      <a class="back" href="/"><span aria-hidden="true">◀</span> Character select</a>
+      <nav class="switcher" aria-label="Classes">
+        {
+          characters.map((x) => (
+            <a href={`/${x.id}/`} data-class={x.id} aria-current={x.id === c.id ? "page" : undefined}>
+              {x.shortName}
+            </a>
+          ))
+        }
+      </nav>
+      <a class="resume-link" href="/resume/">Resume</a>
+    </header>
+
+    <main id="main">
+      <section class="hero class-backdrop" aria-labelledby="class-name">
+        {bg && <Image class="hero-bg" src={bg} alt="" width={1600} loading="eager" />}
+        <div class="hero-inner">
+          <div class="hero-art rise">
+            <CharacterArt id={c.id} width={900} describe />
+          </div>
+          <div class="hero-copy rise">
+            <p class="kicker">Class dossier · {c.archetype}</p>
+            <h1 id="class-name">{c.name}</h1>
+            <p class="role">{c.discipline}</p>
+            <p class="tagline">{c.tagline}</p>
+            <div class="panel stats">
+              <h2 class="kicker">Attributes</h2>
+              <StatBars stats={c.stats} />
+              <p class="fine">Archetypal attributes: a presentation device, not a measurement.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="content">
+        <Section id="mission" index={num()} title="Mission profile">
+          <div class="prose">
+            {c.mission.map((para) => <p>{para}</p>)}
+          </div>
+        </Section>
+
+        <Section id="arsenal" index={num()} title="Arsenal">
+          <ul class="arsenal">
+            {
+              c.arsenal.map((item) => {
+                const icon = skillIcon(item.icon);
+                return (
+                  <li class="tool panel">
+                    {icon ? <Image src={icon} alt="" width={40} height={40} loading="lazy" class="tool-icon" /> : <span class="tool-dot" aria-hidden="true" />}
+                    <span>{item.name}</span>
+                  </li>
+                );
+              })
+            }
+          </ul>
+        </Section>
+
+        {
+          experience.length > 0 && (
+            <Section id="experience" index={num()} title="Field experience">
+              <ol class="timeline">
+                {experience.map((e) => (
+                  <li>
+                    <h3>
+                      {e.role} <span class="org">· {e.org}</span>
+                    </h3>
+                    <p class="dates">
+                      {e.start} – {e.end ?? "Present"}
+                      {e.location && ` · ${e.location}`}
+                    </p>
+                    <ul>{e.bullets.map((b) => <li>{b}</li>)}</ul>
+                  </li>
+                ))}
+              </ol>
+            </Section>
+          )
+        }
+
+        <Section id="projects" index={num()} title="Projects">
+          {
+            completed.length > 0 && (
+              <>
+                <h3 class="group font-display">Completed missions</h3>
+                <ul class="grid">
+                  {completed.map((p) => (
+                    <li>
+                      <ProjectCard project={p} />
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )
+          }
+          {
+            questBoard.length > 0 && (
+              <>
+                <h3 class="group font-display">Quest board <span>in the works</span></h3>
+                <ul class="grid">
+                  {questBoard.map((p) => (
+                    <li>
+                      <ProjectCard project={p} />
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )
+          }
+        </Section>
+
+        <Section id="education" index={num()} title="Education">
+          <ul class="education">
+            {
+              resume.education.map((e) => (
+                <li>
+                  <strong>{e.credential}</strong>
+                  {(e.institution || e.year) && <span>{[e.institution, e.year].filter(Boolean).join(" · ")}</span>}
+                </li>
+              ))
+            }
+          </ul>
+        </Section>
+
+        <nav class="pager" aria-label="Other classes">
+          <a class="pager-link" href={`/${prev.id}/`} data-class={prev.id} rel="prev">
+            <span class="dir"><span aria-hidden="true">◀</span> Previous class</span>
+            <span class="who">{prev.name}</span>
+          </a>
+          <a class="pager-link right" href={`/${next.id}/`} data-class={next.id} rel="next">
+            <span class="dir">Next class <span aria-hidden="true">▶</span></span>
+            <span class="who">{next.name}</span>
+          </a>
+        </nav>
+
+        <footer class="foot">
+          <a href="/">Character select</a>
+          <a href="/resume/">Resume</a>
+          <a href={site.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href={site.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        </footer>
+      </div>
+    </main>
+  </div>
+</Base>
+
+<style>
+  .dossier {
+    min-height: 100svh;
+    background: var(--color-void);
+  }
+
+  /* ─── Top bar ─────────────────────────────────────────────────────── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.65rem clamp(12px, 3vw, 32px);
+    background: color-mix(in oklab, var(--color-void) 82%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid color-mix(in oklab, var(--c-accent) 30%, transparent);
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .topbar a {
+    color: var(--color-muted);
+    text-decoration: none;
+    padding: 0.35rem 0.2rem;
+  }
+  .topbar a:hover {
+    color: var(--color-ink);
+  }
+  .switcher {
+    display: flex;
+    gap: 0.25rem 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .switcher a {
+    border-bottom: 2px solid transparent;
+  }
+  .switcher a[aria-current="page"] {
+    color: var(--c-accent);
+    border-color: var(--c-accent);
+  }
+  .switcher a:not([aria-current]):hover {
+    color: var(--c-accent);
+  }
+  @media (max-width: 720px) {
+    .switcher {
+      display: none;
+    }
+  }
+
+  /* ─── Hero ────────────────────────────────────────────────────────── */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    border-bottom: 1px solid color-mix(in oklab, var(--c-accent) 40%, transparent);
+  }
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(to top, var(--color-void), transparent 30%);
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.55;
+  }
+  .hero-inner {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.8fr) 1.2fr;
+    gap: clamp(1rem, 4vw, 4rem);
+    align-items: end;
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(16px, 4vw, 32px) 0;
+  }
+  .hero-art {
+    height: clamp(320px, 56svh, 560px);
+    filter: drop-shadow(0 0 30px color-mix(in oklab, var(--c-glow) 40%, transparent));
+  }
+  .hero-copy {
+    align-self: center;
+    padding-bottom: 2.5rem;
+  }
+  h1 {
+    margin: 0.4rem 0 0.15rem;
+    font-size: clamp(2.4rem, 6vw, 4.4rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-shadow: 0 0 32px color-mix(in oklab, var(--c-glow) 55%, transparent);
+  }
+  .role {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1rem, 2vw, 1.35rem);
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+  .tagline {
+    margin: 0.75rem 0 1.4rem;
+    max-width: 34rem;
+    font-size: 1.05rem;
+    color: #d3d9e8;
+  }
+  .stats {
+    max-width: 30rem;
+    padding: 1rem 1.2rem;
+  }
+  .stats .kicker {
+    margin: 0 0 0.75rem;
+  }
+  .fine {
+    margin: 0.85rem 0 0;
+    font-size: 0.75rem;
+    color: var(--color-muted);
+  }
+  @media (max-width: 720px) {
+    .hero-inner {
+      grid-template-columns: 1fr;
+    }
+    .hero-art {
+      height: 300px;
+      order: 2;
+      margin-top: -0.5rem;
+    }
+    .hero-copy {
+      padding-bottom: 0;
+    }
+  }
+
+  /* ─── Content ─────────────────────────────────────────────────────── */
+  .content {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    padding: 0 clamp(16px, 4vw, 32px) 2rem;
+  }
+  .prose {
+    max-width: 46rem;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #d3d9e8;
+  }
+  .prose p {
+    margin: 0 0 1rem;
+  }
+
+  .arsenal {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tool {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.7rem 0.9rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+  .tool-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    flex: none;
+  }
+  .tool-dot {
+    width: 10px;
+    height: 10px;
+    margin: 0 9px;
+    flex: none;
+    transform: rotate(45deg);
+    background: var(--c-accent);
+    box-shadow: 0 0 10px var(--c-accent);
+  }
+
+  .group {
+    margin: 2rem 0 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .group:first-of-type {
+    margin-top: 0;
+  }
+  .group span {
+    margin-left: 0.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--c-accent);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .timeline {
+    margin: 0;
+    padding: 0 0 0 1.25rem;
+    border-left: 2px solid color-mix(in oklab, var(--c-accent) 45%, transparent);
+    list-style: none;
+  }
+  .timeline > li {
+    margin-bottom: 1.75rem;
+  }
+  .timeline h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  .timeline .org {
+    font-weight: 500;
+    color: var(--c-accent);
+  }
+  .dates {
+    margin: 0.2rem 0 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+  }
+  .timeline ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: #d3d9e8;
+  }
+
+  .education {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .education li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.9rem;
+  }
+  .education span {
+    color: var(--color-muted);
+  }
+
+  /* ─── Pager + footer ──────────────────────────────────────────────── */
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: clamp(3rem, 7vw, 5rem);
+  }
+  .pager-link {
+    display: grid;
+    gap: 0.2rem;
+    padding: 1rem 1.2rem;
+    text-decoration: none;
+    color: var(--color-ink);
+    border: 1px solid color-mix(in oklab, var(--c-accent) 40%, transparent);
+    background: color-mix(in oklab, var(--c-mid) 30%, transparent);
+    border-radius: 4px;
+    transition:
+      background 0.2s,
+      box-shadow 0.2s;
+  }
+  .pager-link:hover {
+    background: color-mix(in oklab, var(--c-mid) 55%, transparent);
+    box-shadow: 0 0 24px color-mix(in oklab, var(--c-accent) 30%, transparent);
+  }
+  .pager-link.right {
+    text-align: right;
+  }
+  .dir {
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+  .who {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem 1.6rem;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #1c2233;
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .foot a {
+    padding: 0.3rem 0;
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+  .foot a:hover {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-underline-offset: 6px;
+  }
+  @media (max-width: 520px) {
+    .pager {
+      grid-template-columns: 1fr;
+    }
+    .pager-link.right {
+      text-align: left;
+    }
+  }
+</style>

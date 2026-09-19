@@ -1,0 +1,93 @@
+---
+import Base from "@/layouts/Base.astro";
+import CharacterArt from "@/components/CharacterArt.astro";
+import StatBars from "@/components/StatBars.astro";
+import { characters } from "@/data/characters";
+import { site } from "@/data/site";
+import "@/styles/select.css";
+
+const first = characters[0];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: site.name,
+  url: site.url,
+  jobTitle: "Software Engineer",
+  sameAs: [site.github, site.linkedin],
+};
+---
+
+<Base jsonLd={jsonLd} path="/">
+  <main id="main" class="select-stage" data-active={first.id} data-stage>
+    <div class="stage-bg"></div>
+    <div class="stage-floor"></div>
+    <div class="stage-vignette"></div>
+
+    <header class="select-head">
+      <p class="kicker">Benjamin Saks · Player Select</p>
+      <h1 class="select-title">Choose your class</h1>
+      <p class="select-sub">
+        Five specializations, one engineer. Pick a character to open their dossier: projects, source and live demos.
+      </p>
+    </header>
+
+    <ul class="roster" role="list" aria-label="Character classes">
+      {
+        characters.map((c, i) => (
+          <li data-class={c.id} data-index={i} data-current={i === 0 ? "true" : "false"}>
+            <a class="slot" href={`/${c.id}/`} aria-label={`${c.name}: ${c.discipline}`}>
+              <div class="slot-figure">
+                <CharacterArt id={c.id} loading={i === 0 ? "eager" : "lazy"} />
+              </div>
+              <span class="slot-plate" aria-hidden="true">
+                <b>{c.slot}P</b>
+                {c.shortName}
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <section class="info panel" aria-live="polite" aria-label="Selected class details">
+      {
+        characters.map((c, i) => (
+          <div class="info-panel" data-panel={c.id} data-class={c.id} hidden={i !== 0}>
+            <div>
+              <p class="kicker">{c.archetype}</p>
+              <h2 class="info-name">{c.name}</h2>
+              <p class="info-role">{c.discipline}</p>
+              <p class="info-tagline">{c.tagline}</p>
+            </div>
+            <StatBars stats={c.stats} />
+            <ul class="info-tags" aria-label="Focus areas">
+              {c.tags.map((t) => (
+                <li class="chip">{t}</li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </section>
+
+    <div class="select-actions">
+      <a id="choose" class="choose" href={`/${first.id}/`}>
+        <span>Choose <span data-choose-name>{first.shortName}</span></span>
+        <span aria-hidden="true">▶</span>
+      </a>
+      <p class="select-hint"><kbd>←</kbd> <kbd>→</kbd> browse · <kbd>Enter</kbd> choose · <kbd>1</kbd>–<kbd>5</kbd> quick pick</p>
+    </div>
+
+    <nav class="select-foot" aria-label="More">
+      <a href="/resume/">Resume</a>
+      <a href="/resume/#contact">Contact</a>
+      <a href={site.github} rel="noopener noreferrer" target="_blank">GitHub</a>
+      <a href={site.linkedin} rel="noopener noreferrer" target="_blank">LinkedIn</a>
+    </nav>
+  </main>
+
+  <script>
+    import "@/scripts/select";
+  </script>
+</Base>

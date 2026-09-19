@@ -1,0 +1,25 @@
+---
+import type { Stat } from "@/data/characters";
+
+interface Props {
+  stats: Stat[];
+}
+const { stats } = Astro.props;
+---
+
+<dl class="grid gap-1.5 m-0">
+  {
+    stats.map((s) => (
+      <div class="stat-row">
+        <dt>{s.label}</dt>
+        <dd class="m-0">
+          <span class="stat-bar" role="img" aria-label={`${s.label}: ${s.value} out of 10`}>
+            {Array.from({ length: 10 }, (_, i) => (
+              <span class:list={{ on: i < s.value }} />
+            ))}
+          </span>
+        </dd>
+      </div>
+    ))
+  }
+</dl>

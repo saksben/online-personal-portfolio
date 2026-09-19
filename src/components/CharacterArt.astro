@@ -1,0 +1,75 @@
+---
+/**
+ * Renders a character. Uses real art from src/assets/art/<class>/ when it
+ * exists (idle required; hover / selected optional) and the designed
+ * placeholder otherwise. State swaps are driven by CSS on the parent slot
+ * (see select.css), so there is no per-character logic here.
+ */
+import { Image } from "astro:assets";
+import { characterById, type ClassId } from "@/data/characters";
+import { characterArt } from "@/lib/assets";
+import PlaceholderFigure from "./PlaceholderFigure.astro";
+
+interface Props {
+  id: ClassId;
+  /** Pixel width to generate for real art. */
+  width?: number;
+  /** Provide alt text when the art is not decorative. */
+  describe?: boolean;
+  loading?: "eager" | "lazy";
+}
+const { id, width = 640, describe = false, loading = "eager" } = Astro.props;
+const character = characterById[id];
+const idle = characterArt(id, "idle");
+const hover = characterArt(id, "hover");
+const selected = characterArt(id, "selected");
+const alt = describe ? character.artAlt : "";
+---
+
+<div class="art" data-has-hover={hover ? "" : undefined} data-has-selected={selected ? "" : undefined}>
+  {
+    idle ? (
+      <>
+        <Image class="layer idle" src={idle} alt={alt} width={width} loading={loading} />
+        {hover && <Image class="layer hover" src={hover} alt="" width={width} loading="lazy" />}
+        {selected && <Image class="layer selected" src={selected} alt="" width={width} loading="lazy" />}
+      </>
+    ) : (
+      <PlaceholderFigure id={id} label={describe ? character.artAlt : undefined} />
+    )
+  }
+</div>
+
+<style>
+  .art {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  .layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: bottom;
+    transition: opacity 0.2s;
+  }
+  .hover,
+  .selected {
+    opacity: 0;
+  }
+  :global(li[data-current="true"]) .art[data-has-hover] .idle {
+    opacity: 0;
+  }
+  :global(li[data-current="true"]) .art .hover {
+    opacity: 1;
+  }
+  :global(li[data-selected="true"]) .art[data-has-selected] .idle,
+  :global(li[data-selected="true"]) .art[data-has-selected] .hover {
+    opacity: 0;
+  }
+  :global(li[data-selected="true"]) .art .selected {
+    opacity: 1;
+  }
+</style>

@@ -1,0 +1,413 @@
+---
+import { Image } from "astro:assets";
+import Base from "@/layouts/Base.astro";
+import Section from "@/components/Section.astro";
+import { characters } from "@/data/characters";
+import { projects } from "@/data/projects";
+import { resume } from "@/data/resume";
+import { site } from "@/data/site";
+import profile from "@/assets/ben.jpg";
+
+const completed = projects.filter((p) => p.status === "complete");
+let n = 0;
+const num = () => String(++n).padStart(2, "0");
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  mainEntity: {
+    "@type": "Person",
+    name: site.name,
+    jobTitle: resume.headline,
+    url: site.url,
+    sameAs: [site.github, site.linkedin],
+  },
+};
+---
+
+<Base
+  title={`Resume | ${site.name}`}
+  description={`${site.name}: ${resume.headline}. Skills across full-stack, database, AI, mobile and game development, education and contact details.`}
+  path="/resume/"
+  jsonLd={jsonLd}
+>
+  <div class="resume" data-class="paladin">
+    <header class="topbar">
+      <a href="/"><span aria-hidden="true">◀</span> Character select</a>
+      <nav aria-label="Classes" class="classes">
+        {characters.map((c) => <a href={`/${c.id}/`}>{c.shortName}</a>)}
+      </nav>
+    </header>
+
+    <main id="main" class="page">
+      <section class="intro" aria-labelledby="name">
+        <Image src={profile} alt={`Portrait of ${site.name}`} width={160} height={160} class="portrait" />
+        <div>
+          <p class="kicker">Resume</p>
+          <h1 id="name">{site.name}</h1>
+          <p class="headline">{resume.headline} · {site.location}</p>
+          <p class="links">
+            <a href={site.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href={site.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+            <a href="#contact">Contact</a>
+          </p>
+        </div>
+      </section>
+
+      <Section id="summary" index={num()} title="Summary">
+        <p class="prose">{resume.summary}</p>
+      </Section>
+
+      <Section id="skills" index={num()} title="Skills by class">
+        <ul class="skills">
+          {
+            characters.map((c) => (
+              <li data-class={c.id} class="panel skill">
+                <h3 class="font-display">
+                  <a href={`/${c.id}/`}>{c.name}</a>
+                  <span>{c.discipline}</span>
+                </h3>
+                <ul>
+                  {c.arsenal.map((a) => (
+                    <li class="chip">{a.name}</li>
+                  ))}
+                </ul>
+              </li>
+            ))
+          }
+        </ul>
+      </Section>
+
+      {
+        resume.experience.length > 0 && (
+          <Section id="experience" index={num()} title="Experience">
+            <ol class="timeline">
+              {resume.experience.map((e) => (
+                <li>
+                  <h3>
+                    {e.role} <span class="org">· {e.org}</span>
+                  </h3>
+                  <p class="dates">
+                    {e.start} – {e.end ?? "Present"}
+                    {e.location && ` · ${e.location}`}
+                  </p>
+                  <ul>{e.bullets.map((b) => <li>{b}</li>)}</ul>
+                </li>
+              ))}
+            </ol>
+          </Section>
+        )
+      }
+
+      <Section id="projects" index={num()} title="Selected projects">
+        <ul class="projects">
+          {
+            completed.map((p) => (
+              <li>
+                <strong>{p.title}</strong> <span class="muted">— {p.tech.join(", ")}</span>
+                {p.repo && (
+                  <>
+                    {" "}
+                    <a href={p.repo} target="_blank" rel="noopener noreferrer">
+                      source<span class="sr-only"> for {p.title}</span>
+                    </a>
+                  </>
+                )}
+              </li>
+            ))
+          }
+        </ul>
+      </Section>
+
+      <Section id="education" index={num()} title="Education">
+        <ul class="education">
+          {
+            resume.education.map((e) => (
+              <li>
+                <strong>{e.credential}</strong>
+                {(e.institution || e.year) && <span class="muted">{[e.institution, e.year].filter(Boolean).join(" · ")}</span>}
+              </li>
+            ))
+          }
+        </ul>
+      </Section>
+
+      <Section id="contact" index={num()} title="Contact">
+        <form class="contact" action={site.contactForm} method="POST">
+          <input type="hidden" name="_subject" value="Someone contacted you from your portfolio" />
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true" />
+          <label>
+            <span>Your name</span>
+            <input type="text" name="name" autocomplete="name" required />
+          </label>
+          <label>
+            <span>Your email</span>
+            <input type="email" name="_replyto" autocomplete="email" required />
+          </label>
+          <label>
+            <span>Your message</span>
+            <textarea name="message" rows="5" required></textarea>
+          </label>
+          <button type="submit" class="btn btn-primary">Send message</button>
+        </form>
+      </Section>
+
+      <footer class="foot">
+        <a href="/">Character select</a>
+        <a href={site.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href={site.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </footer>
+    </main>
+  </div>
+</Base>
+
+<style>
+  .resume {
+    min-height: 100svh;
+    background:
+      radial-gradient(80% 40% at 50% 0%, color-mix(in oklab, var(--c-mid) 45%, transparent), transparent),
+      var(--color-void);
+  }
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.65rem clamp(12px, 3vw, 32px);
+    border-bottom: 1px solid color-mix(in oklab, var(--c-accent) 30%, transparent);
+    font-family: var(--font-display);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .topbar a {
+    color: var(--color-muted);
+    text-decoration: none;
+    padding: 0.35rem 0.2rem;
+  }
+  .topbar a:hover {
+    color: var(--color-ink);
+  }
+  .classes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1rem;
+  }
+  @media (max-width: 720px) {
+    .classes {
+      display: none;
+    }
+  }
+  .page {
+    width: min(920px, 100%);
+    margin: 0 auto;
+    padding: clamp(1.5rem, 4vw, 3rem) clamp(16px, 4vw, 32px) 2rem;
+  }
+  .intro {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .portrait {
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--c-accent);
+    box-shadow: 0 0 24px color-mix(in oklab, var(--c-accent) 35%, transparent);
+  }
+  h1 {
+    margin: 0.2rem 0 0;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.05;
+  }
+  .headline {
+    margin: 0.3rem 0 0;
+    color: var(--color-muted);
+  }
+  .links {
+    display: flex;
+    gap: 1.25rem;
+    margin: 0.7rem 0 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+  }
+  .links a,
+  .projects a,
+  .skill h3 a {
+    color: var(--c-accent);
+    text-underline-offset: 4px;
+  }
+  .prose {
+    max-width: 44rem;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #d3d9e8;
+  }
+  .skills {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .skill {
+    padding: 1rem 1.2rem;
+  }
+  .skill h3 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.9rem;
+    margin: 0 0 0.7rem;
+    font-size: 1.05rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .skill h3 span {
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    color: var(--color-muted);
+  }
+  .skill ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .projects,
+  .education {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .muted {
+    color: var(--color-muted);
+  }
+  .timeline {
+    margin: 0;
+    padding: 0 0 0 1.25rem;
+    border-left: 2px solid color-mix(in oklab, var(--c-accent) 45%, transparent);
+    list-style: none;
+  }
+  .timeline > li {
+    margin-bottom: 1.5rem;
+  }
+  .timeline h3 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+  .org {
+    font-weight: 500;
+    color: var(--c-accent);
+  }
+  .dates {
+    margin: 0.2rem 0 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+  }
+  .contact {
+    display: grid;
+    gap: 1rem;
+    max-width: 34rem;
+  }
+  .contact label {
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+    color: var(--color-muted);
+  }
+  .contact input:not(.hp),
+  .contact textarea {
+    padding: 0.65rem 0.8rem;
+    font: inherit;
+    color: var(--color-ink);
+    background: color-mix(in oklab, var(--c-dark) 90%, white 4%);
+    border: 1px solid color-mix(in oklab, var(--c-accent) 35%, transparent);
+    border-radius: 3px;
+  }
+  .contact button {
+    justify-self: start;
+    cursor: pointer;
+  }
+  .hp {
+    position: absolute;
+    left: -9999px;
+  }
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem 1.6rem;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #1c2233;
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .foot a {
+    padding: 0.3rem 0;
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+  .foot a:hover {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-underline-offset: 6px;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  @media (max-width: 520px) {
+    .intro {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  @media print {
+    .resume {
+      background: #fff;
+      color: #000;
+    }
+    .topbar,
+    #contact,
+    .foot {
+      display: none;
+    }
+    .panel,
+    .chip {
+      background: none;
+      border-color: #999;
+      color: #000;
+      backdrop-filter: none;
+    }
+    .panel::before,
+    .panel::after {
+      display: none;
+    }
+    .prose,
+    .muted {
+      color: #222;
+    }
+  }
+</style>

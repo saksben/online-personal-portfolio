@@ -1,0 +1,36 @@
+---
+import Base from "@/layouts/Base.astro";
+---
+
+<Base title="Off the map | Benjamin Saks" description="That page doesn't exist. Head back to character select." noindex path="/404/">
+  <main id="main" class="lost" data-class="oracle">
+    <p class="kicker">Error 404</p>
+    <h1>You wandered off the map</h1>
+    <p>There's nothing at this address. Head back and pick a class.</p>
+    <a class="btn btn-primary" href="/">Return to character select</a>
+  </main>
+</Base>
+
+<style>
+  .lost {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 1rem;
+    min-height: 100svh;
+    padding: 2rem 16px;
+    text-align: center;
+    background: var(--backdrop);
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  p {
+    margin: 0;
+    color: var(--color-muted);
+  }
+</style>
