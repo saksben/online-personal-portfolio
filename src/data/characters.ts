@@ -58,10 +58,10 @@ export const characters: Character[] = [
     archetype: "The Adventurer",
     tagline: "Adaptable. Resourceful. Equipped for any terrain.",
     mission: [
-      "Full-stack engineering across the whole product: interface, API and data. My weapons of choice are JavaScript and React / Next.js, backed by TypeScript, Angular, Node and SQL, with Java and Spring Boot in the pack for when the job calls for it.",
+      "Full-stack engineering across the whole product: interface, API and data. My weapons of choice are JavaScript and React / Next.js, backed by TypeScript, Angular, Node and SQL, with Python and Django/Flask in the pack for when the job calls for it.",
       "The Paladin is built for problems that don't fit in one layer. That means shipping a design system, wiring a dashboard to real data, or choosing the right tool and moving on.",
     ],
-    tags: ["React", "TypeScript", "Node", "SQL"],
+    tags: ["React", "TypeScript", "Node", "SQL", "Python"],
     arsenal: [
       { name: "HTML / CSS", icon: "html-css" },
       { name: "JavaScript", icon: "javascript-icon" },
@@ -74,7 +74,7 @@ export const characters: Character[] = [
       { name: "Storybook", icon: "storybook-icon" },
       { name: "Node.js" },
       { name: "SQL" },
-      { name: "Java / Spring Boot" },
+      { name: "Python" },
     ],
     stats: [
       { label: "Versatility", value: 9 },
