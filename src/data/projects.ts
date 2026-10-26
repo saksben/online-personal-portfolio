@@ -95,8 +95,9 @@ export const projects: Project[] = [
     title: "SaaS Template",
     capability: "Full-stack architecture",
     summary: "A production-shaped full-stack starter showing how frontend, API, data layer and deployment fit together.",
-    status: "concept",
+    status: "complete",
     tech: ["TypeScript", "React", "Node", "SQL"],
+    repo: `${site.github}/saas-template`,
   },
   {
     slug: "skill-tree-of-you",
@@ -104,8 +105,9 @@ export const projects: Project[] = [
     title: "Skill Tree of You",
     capability: "Complex product / UI",
     summary: "An interactive, RPG-style skill tree for exploring a person's abilities, and a stress test for a rich product interface.",
-    status: "concept",
+    status: "complete",
     tech: ["TypeScript", "React"],
+    repo: `${site.github}/skill-tree`,
   },
   {
     slug: "aura-compiler",
@@ -124,8 +126,9 @@ export const projects: Project[] = [
     title: "Data Warehouse",
     capability: "Data engineering",
     summary: "Ingestion, ETL/ELT, normalization, dimensional modeling, transformations, analytics and reporting, end to end.",
-    status: "concept",
+    status: "complete",
     tech: ["SQL", "PostgreSQL", "Python"],
+    repo: `${site.github}/sql-data-warehouse`,
   },
   {
     slug: "constellation-of-a-life",
@@ -157,8 +160,9 @@ export const projects: Project[] = [
     capability: "Retrieval architecture",
     summary:
       "Turns a corpus into an interrogable knowledge system: ingestion, parsing, chunking, embeddings, vector storage, retrieval, context assembly, generation and citations.",
-    status: "concept",
+    status: "complete",
     tech: ["Embeddings", "Vector search", "LLM APIs"],
+    repo: `${site.github}/curator`,
   },
   {
     slug: "ai-instance-generator",
@@ -167,8 +171,9 @@ export const projects: Project[] = [
     capability: "AI knowledge & personality systems",
     summary:
       "Give it a subject and it discovers sources, builds a corpus and a RAG system, writes a behavioral system prompt, and produces an AI instance you can talk to.",
-    status: "concept",
+    status: "complete",
     tech: ["RAG", "LLM APIs", "Prompt design"],
+    repo: `${site.github}/forge`,
   },
   {
     slug: "ai-command-center",
@@ -197,8 +202,9 @@ export const projects: Project[] = [
     title: "Todoist-style App",
     capability: "Native product implementation",
     summary: "A full native task-management app: the everyday product, done properly on a phone.",
-    status: "concept",
+    status: "complete",
     tech: ["Native mobile"],
+    repo: `${site.github}/todoish-mobile`,
   },
   {
     slug: "pwa-template",
@@ -206,8 +212,9 @@ export const projects: Project[] = [
     title: "PWA Template",
     capability: "Progressive web architecture",
     summary: "An installable, offline-capable progressive web app foundation.",
-    status: "concept",
+    status: "complete",
     tech: ["PWA", "Service workers", "TypeScript"],
+    repo: `${site.github}/sawatdee`,
   },
   {
     slug: "weight-form-app",
@@ -215,8 +222,9 @@ export const projects: Project[] = [
     title: "Weight / Form App",
     capability: "Camera / computer vision",
     summary: "A mobile app that uses the device camera and computer vision to check form.",
-    status: "concept",
+    status: "complete",
     tech: ["Camera", "Computer vision"],
+    repo: `${site.github}/lifter`,
   },
 
   // ─── Worldbuilder · Game ────────────────────────────────────────────────
