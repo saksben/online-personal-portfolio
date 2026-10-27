@@ -3,12 +3,12 @@ import { Image } from "astro:assets";
 import Base from "@/layouts/Base.astro";
 import Section from "@/components/Section.astro";
 import { characters } from "@/data/characters";
-import { projects } from "@/data/projects";
+// import { projects } from "@/data/projects";
 import { resume } from "@/data/resume";
 import { site } from "@/data/site";
 import profile from "@/assets/ben.jpg";
 
-const completed = projects.filter((p) => p.status === "complete");
+// const completed = projects.filter((p) => p.status === "complete");
 let n = 0;
 const num = () => String(++n).padStart(2, "0");
 
