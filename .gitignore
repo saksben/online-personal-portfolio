@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .astro/
+scripts/.art-staging/
 .DS_Store
 *.log
 .env

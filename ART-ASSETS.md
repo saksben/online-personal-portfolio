@@ -2,6 +2,20 @@
 
 The site ships with designed placeholder silhouettes (`src/components/PlaceholderFigure.astro`). Final art replaces them **by dropping files into a folder — no code changes**. `src/lib/assets.ts` looks for the files below at build time; any that exist are used, any that don't fall back to the placeholder.
 
+**Current status:** all 5 `idle` renders are in (AI-generated, normalized with `scripts/prep-art.mjs`, see below). `hover`/`selected` aren't made yet, so `idle` is used for every state on all 5 characters.
+
+## Normalizing raw AI renders
+
+Raw ChatGPT exports land as `src/assets/art/<class>/<class>.png` and typically aren't ready to drop in directly: inconsistent canvas use, no shared scale/baseline across characters, and (for two of the five, historically) a baked-in backdrop instead of real alpha transparency. Before using one, confirm it actually has alpha (`sharp` metadata, `hasAlpha: true`, corner pixels at alpha 0) — if ChatGPT baked in a checkerboard or solid background instead, re-prompt it for "isolated character on a fully transparent PNG background, no backdrop, no checkerboard pattern."
+
+Once a raw render has real transparency, run:
+
+```sh
+node scripts/prep-art.mjs
+```
+
+This reads every `src/assets/art/<class>/<class>.png`, finds the opaque bounding box (ignoring soft glow halos below the alpha threshold), scales it to a shared visual size, and centers it on a common 1200×2000 canvas with a fixed foot baseline — the same treatment for every character regardless of pose, so a kneeling or floating pose doesn't need to change, only its placement on the canvas. Output goes to `scripts/.art-staging/<class>/idle.png` (gitignored) for review before copying into `src/assets/art/<class>/idle.png`.
+
 ## File layout
 
 ```
