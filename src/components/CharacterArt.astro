@@ -93,9 +93,26 @@ const spotSvg = ({ x, y, size, stops, shape = "circle" }: Spot) => {
   const gradientStops = stops.map((s) => `<stop offset="${s.offset}%" stop-color="${s.color}" stop-opacity="${s.opacity ?? 1}"/>`).join("");
   let shapeEl;
   if (shape === "jack") {
-    const waist = r * 0.22;
-    const c = waist * Math.SQRT1_2;
-    const d = `M 0,${-r} Q ${c},${-c} ${r},0 Q ${c},${c} 0,${r} Q ${-c},${c} ${-r},0 Q ${-c},${-c} 0,${-r} Z`;
+    // 4 skinny arms (N/E/S/W): each tip tapers on straight edges to a pair
+    // of "shoulder" points near the center, and a concave arc (quadratic,
+    // control pulled to the center) joins each arm's shoulder to the
+    // next arm's -- that arc is the only curved part, giving a thin cross
+    // with pinched, rounded notches rather than a plump 4-point star.
+    const thetaRad = (8 * Math.PI) / 180; // arm half-width, in degrees off its axis
+    const baseR = r * 0.3; // radius of the shoulder points
+    const axes = [-90, 0, 90, 180].map((deg) => (deg * Math.PI) / 180);
+    let d = "";
+    for (let i = 0; i < 4; i++) {
+      const a = axes[i];
+      const tip: [number, number] = [r * Math.cos(a), r * Math.sin(a)];
+      const shoulderCw: [number, number] = [baseR * Math.cos(a + thetaRad), baseR * Math.sin(a + thetaRad)];
+      const nextA = axes[(i + 1) % 4];
+      const shoulderCcwNext: [number, number] = [baseR * Math.cos(nextA - thetaRad), baseR * Math.sin(nextA - thetaRad)];
+      const nextTip: [number, number] = [r * Math.cos(nextA), r * Math.sin(nextA)];
+      if (i === 0) d += `M ${tip[0]},${tip[1]} `;
+      d += `L ${shoulderCw[0]},${shoulderCw[1]} Q 0,0 ${shoulderCcwNext[0]},${shoulderCcwNext[1]} L ${nextTip[0]},${nextTip[1]} `;
+    }
+    d += "Z";
     shapeEl = `<path transform="translate(${cx} ${cy})" d="${d}" fill="url(#g)"/>`;
   } else {
     shapeEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#g)"/>`;
