@@ -38,35 +38,50 @@ const VARIANTS = ["bob", "drift", "orbit"] as const;
  *  - courier's companion robot should read as pacing alongside him.
  *  - archivist's schema runes/hologram should glow brighter at the peak of
  *    their motion, like the lantern is revealing them.
+ *  - worldbuilder's 5 world-fragments (indices 0-4) keep the default
+ *    bob/drift/orbit cycle; their orbit rings + gem flecks (indices 5-9,
+ *    extracted separately per fragment) sweep in a wide horizontal ellipse
+ *    with a scale pulse standing in for depth, like they're circling each
+ *    fragment through the xz plane.
  */
 const MOTION: Partial<Record<ClassId, string[]>> = {
   oracle: Array(7).fill("shard-arc"),
   courier: ["walk"],
-  archivist: ["glow-pulse", "glow-pulse", "glow-pulse", "glow-pulse"],
+  archivist: Array(6).fill("glow-pulse"),
+  worldbuilder: [...Array(6), ...Array(5).fill("orbit-xz")],
 };
 const motionFor = (i: number) => MOTION[id]?.[i] ?? VARIANTS[i % VARIANTS.length];
 
 /**
  * Per-prop animation-duration/delay, in seconds. Default staggers both
  * duration and delay by index so independent props (e.g. archivist's runes)
- * desync from each other. Oracle's shard swarm needs the opposite -- the
- * same duration so they never drift out of phase, with only a small delay
- * step so the micro-shards read as trailing just behind the main shard.
- * A *positive* delay pushes an element's start later in real time, so it
- * lags the one before it; a negative delay (the default case below) does
- * the opposite, fast-forwarding it ahead -- easy to get backwards.
+ * desync from each other. A *positive* delay pushes an element's start
+ * later in real time, so it lags the one before it; a negative delay (the
+ * default case below) does the opposite, fast-forwarding it ahead -- easy
+ * to get backwards.
+ *  - oracle's shard swarm needs the same duration for every shard so they
+ *    never drift out of phase, with only a small delay step so the
+ *    micro-shards read as trailing just behind the main shard.
+ *  - archivist's runes share the lantern-glow's exact duration and zero
+ *    delay, so every rune illuminates in the same beat as the lantern
+ *    rather than drifting in and out of sync with it over time.
  */
-const timingFor = (i: number) =>
-  id === "oracle" ? { duration: 7, delay: i * 0.18 } : { duration: 4.5 + (i % 4) * 0.8, delay: -(i * 0.6) };
+const timingFor = (i: number) => {
+  if (id === "oracle") return { duration: 7, delay: i * 0.18 };
+  if (id === "archivist") return { duration: 4.5, delay: 0 };
+  if (id === "worldbuilder" && i >= 6) return { duration: 9 + (i % 5) * 0.6, delay: -(i * 0.5) };
+  return { duration: 4.5 + (i % 4) * 0.8, delay: -(i * 0.6) };
+};
 
 /**
  * CSS-only glow (no separate art) positioned over a spot in the idle art
  * itself, for signature items that are held/worn (fused into the body
  * render) rather than a separate floating prop layer:
  *  - archivist's lantern brightens on a continuous loop alongside the runes.
- *  - paladin's sword blade gets a brief glint timed to the slot's breathe
- *    animation (see select.css), so it only glimmers while that slot is
- *    current, synced to the same beat as the figure rising.
+ *  - paladin's sword blade and courier's eye lens each get a brief glint
+ *    timed to the slot's breathe animation (see select.css), so they only
+ *    glimmer while that slot is current, synced to the same beat as the
+ *    figure rising -- i.e. at the top of its path.
  * Rendered as a data-URI SVG <img> with the `.layer` class (not a plain
  * div with percent left/top) so it gets the exact same object-fit: contain
  * / object-position: bottom placement math as the real art -- a div
@@ -138,6 +153,16 @@ const GLINT: Partial<Record<ClassId, Spot>> = {
       { offset: 65, color: "#7fb4e8", opacity: 0 },
     ],
   },
+  courier: {
+    x: 50.8,
+    y: 20.8,
+    size: 2.2,
+    stops: [
+      { offset: 0, color: "#ffffff" },
+      { offset: 25, color: "#4dffb3" },
+      { offset: 60, color: "#10e08a", opacity: 0 },
+    ],
+  },
 };
 const glint = GLINT[id];
 /** A larger, fainter bloom around GLINT's sharp core, same spot and timing,
@@ -152,6 +177,16 @@ const GLINT_HALO: Partial<Record<ClassId, Spot>> = {
       { offset: 0, color: "#ffffff", opacity: 0.8 },
       { offset: 35, color: "#7fb4e8", opacity: 0.4 },
       { offset: 100, color: "#7fb4e8", opacity: 0 },
+    ],
+  },
+  courier: {
+    x: 50.8,
+    y: 20.8,
+    size: 5,
+    stops: [
+      { offset: 0, color: "#ffffff", opacity: 0.7 },
+      { offset: 35, color: "#10e08a", opacity: 0.35 },
+      { offset: 100, color: "#10e08a", opacity: 0 },
     ],
   },
 };
@@ -169,10 +204,10 @@ const glintHalo = GLINT_HALO[id];
           <img class="layer lantern-glow" src={spotSvg(glow)} alt="" style={{ transformOrigin: `${glow.x}% ${glow.y}%` }} />
         )}
         {glintHalo && (
-          <img class="layer sword-glint-halo" src={spotSvg(glintHalo)} alt="" style={{ transformOrigin: `${glintHalo.x}% ${glintHalo.y}%` }} />
+          <img class="layer glint-halo" src={spotSvg(glintHalo)} alt="" style={{ transformOrigin: `${glintHalo.x}% ${glintHalo.y}%` }} />
         )}
         {glint && (
-          <img class="layer sword-glint" src={spotSvg(glint)} alt="" style={{ transformOrigin: `${glint.x}% ${glint.y}%` }} />
+          <img class="layer glint-core" src={spotSvg(glint)} alt="" style={{ transformOrigin: `${glint.x}% ${glint.y}%` }} />
         )}
         {props.map((prop, i) => {
           const timing = timingFor(i);
@@ -288,6 +323,34 @@ const glintHalo = GLINT_HALO[id];
     }
   }
 
+  /* Worldbuilder's orbit rings + gem flecks (see MOTION above): a wide
+     horizontal ellipse with a scale (and matching opacity) pulse standing
+     in for the z axis -- bigger/brighter swinging out to the side reads as
+     "toward the viewer", smaller/dimmer at the ends reads as "swinging
+     behind" the fragment, like an orbit seen close to edge-on. */
+  .prop-orbit-xz {
+    animation: prop-orbit-xz 10s ease-in-out infinite;
+  }
+  @keyframes prop-orbit-xz {
+    0%,
+    100% {
+      transform: translate(-5%, 0.5%) scale(0.82);
+      opacity: 0.75;
+    }
+    25% {
+      transform: translate(-1%, -1.2%) scale(1.05);
+      opacity: 0.9;
+    }
+    50% {
+      transform: translate(5%, 0.5%) scale(1.18);
+      opacity: 1;
+    }
+    75% {
+      transform: translate(1%, 2%) scale(0.95);
+      opacity: 0.85;
+    }
+  }
+
   /* Courier's robot: a quick side-to-side pacing cycle with a little step
      bounce, so it reads as walking alongside him rather than floating. */
   .prop-walk {
@@ -348,20 +411,21 @@ const glintHalo = GLINT_HALO[id];
     }
   }
 
-  /* Paladin's sword glint (see GLINT above): stays invisible until the
-     slot is current, then flashes once per breathe cycle in step with it
-     (see [data-current="true"] .slot-figure in select.css) rather than
-     running on its own independent loop like the other classes' props. */
-  .sword-glint {
+  /* Glint core -- paladin's sword, courier's eye lens (see GLINT above):
+     stays invisible until the slot is current, then flashes once per
+     breathe cycle in step with it (see [data-current="true"] .slot-figure
+     in select.css) rather than running on its own independent loop like
+     the other classes' props. */
+  .glint-core {
     filter: blur(0.5px);
     mix-blend-mode: screen;
     opacity: 0;
     pointer-events: none;
   }
-  :global(li[data-current="true"]) .sword-glint {
-    animation: sword-glint-pulse 3.6s ease-in-out infinite;
+  :global(li[data-current="true"]) .glint-core {
+    animation: glint-pulse 3.6s ease-in-out infinite;
   }
-  @keyframes sword-glint-pulse {
+  @keyframes glint-pulse {
     0%,
     80%,
     100% {
@@ -374,17 +438,17 @@ const glintHalo = GLINT_HALO[id];
 
   /* Larger, fainter bloom around the glint's sharp core (see GLINT_HALO
      above) -- same spot and timing, so the flash reads as light catching
-     the blade rather than a bright dot sitting on it. */
-  .sword-glint-halo {
+     the surface rather than a bright dot sitting on it. */
+  .glint-halo {
     filter: blur(10px);
     mix-blend-mode: screen;
     opacity: 0;
     pointer-events: none;
   }
-  :global(li[data-current="true"]) .sword-glint-halo {
-    animation: sword-glint-halo-pulse 3.6s ease-in-out infinite;
+  :global(li[data-current="true"]) .glint-halo {
+    animation: glint-halo-pulse 3.6s ease-in-out infinite;
   }
-  @keyframes sword-glint-halo-pulse {
+  @keyframes glint-halo-pulse {
     0%,
     80%,
     100% {
@@ -397,8 +461,8 @@ const glintHalo = GLINT_HALO[id];
 
   :global(body[data-transition]) .prop,
   :global(body[data-transition]) .lantern-glow,
-  :global(body[data-transition]) .sword-glint,
-  :global(body[data-transition]) .sword-glint-halo {
+  :global(body[data-transition]) .glint-core,
+  :global(body[data-transition]) .glint-halo {
     animation: none !important;
   }
 </style>

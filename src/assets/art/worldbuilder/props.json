@@ -82,5 +82,75 @@
       "height": 3.3
     },
     "rawArea": 1065
+  },
+  {
+    "file": "prop-6.png",
+    "originPct": {
+      "x": 14.4,
+      "y": 78.3
+    },
+    "boxPct": {
+      "left": 0,
+      "top": 69.5,
+      "width": 28.7,
+      "height": 17.5
+    },
+    "rawArea": 1549
+  },
+  {
+    "file": "prop-7.png",
+    "originPct": {
+      "x": 87.3,
+      "y": 64.1
+    },
+    "boxPct": {
+      "left": 78.8,
+      "top": 54.4,
+      "width": 17,
+      "height": 19.3
+    },
+    "rawArea": 3404
+  },
+  {
+    "file": "prop-8.png",
+    "originPct": {
+      "x": 85,
+      "y": 47
+    },
+    "boxPct": {
+      "left": 75,
+      "top": 39.5,
+      "width": 20,
+      "height": 15
+    },
+    "rawArea": 2617
+  },
+  {
+    "file": "prop-9.png",
+    "originPct": {
+      "x": 23.8,
+      "y": 21.3
+    },
+    "boxPct": {
+      "left": 15,
+      "top": 14,
+      "width": 17.5,
+      "height": 14.5
+    },
+    "rawArea": 2274
+  },
+  {
+    "file": "prop-10.png",
+    "originPct": {
+      "x": 12.9,
+      "y": 53.8
+    },
+    "boxPct": {
+      "left": 1.7,
+      "top": 45,
+      "width": 22.5,
+      "height": 17.5
+    },
+    "rawArea": 2112
   }
 ]
