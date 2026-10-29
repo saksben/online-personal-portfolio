@@ -81,13 +81,26 @@ interface Spot {
   y: number;
   size: number;
   stops: { offset: number; color: string; opacity?: number }[];
+  /** "jack": a 4-point sparkle (N/E/S/W tips joined by concave arcs pulled
+   * toward the center) instead of a plain circle -- used for a glint that
+   * should read as a twinkle rather than a glowing orb. */
+  shape?: "circle" | "jack";
 }
-const spotSvg = ({ x, y, size, stops }: Spot) => {
+const spotSvg = ({ x, y, size, stops, shape = "circle" }: Spot) => {
   const cx = (x / 100) * CANVAS_W;
   const cy = (y / 100) * CANVAS_H;
   const r = (size / 100) * CANVAS_W;
   const gradientStops = stops.map((s) => `<stop offset="${s.offset}%" stop-color="${s.color}" stop-opacity="${s.opacity ?? 1}"/>`).join("");
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${CANVAS_W}" height="${CANVAS_H}" viewBox="0 0 ${CANVAS_W} ${CANVAS_H}"><defs><radialGradient id="g">${gradientStops}</radialGradient></defs><circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#g)"/></svg>`;
+  let shapeEl;
+  if (shape === "jack") {
+    const waist = r * 0.22;
+    const c = waist * Math.SQRT1_2;
+    const d = `M 0,${-r} Q ${c},${-c} ${r},0 Q ${c},${c} 0,${r} Q ${-c},${c} ${-r},0 Q ${-c},${-c} 0,${-r} Z`;
+    shapeEl = `<path transform="translate(${cx} ${cy})" d="${d}" fill="url(#g)"/>`;
+  } else {
+    shapeEl = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#g)"/>`;
+  }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${CANVAS_W}" height="${CANVAS_H}" viewBox="0 0 ${CANVAS_W} ${CANVAS_H}"><defs><radialGradient id="g">${gradientStops}</radialGradient></defs>${shapeEl}</svg>`;
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 };
 
@@ -99,7 +112,8 @@ const GLINT: Partial<Record<ClassId, Spot>> = {
   paladin: {
     x: 14.3,
     y: 71,
-    size: 2.6,
+    size: 3.4,
+    shape: "jack",
     stops: [
       { offset: 0, color: "#ffffff" },
       { offset: 20, color: "#ffffff" },
