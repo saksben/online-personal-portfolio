@@ -39,18 +39,26 @@ const VARIANTS = ["bob", "drift", "orbit"] as const;
  *  - archivist's schema runes/hologram should glow brighter at the peak of
  *    their motion, like the lantern is revealing them.
  *  - worldbuilder's 5 world-fragments (indices 0-4) keep the default
- *    bob/drift/orbit cycle; their orbit rings + gem flecks (indices 5-9,
- *    extracted separately per fragment) sweep in a wide horizontal ellipse
- *    with a scale pulse standing in for depth, like they're circling each
- *    fragment through the xz plane.
+ *    bob/drift/orbit cycle; their orbit rings + gem flecks (indices 6-10,
+ *    extracted separately per fragment) follow their paired fragment's
+ *    *exact* path (the "-ebb" keyframes below are copies of bob/drift/orbit
+ *    with an added inward/outward scale pulse), slightly delayed -- the
+ *    same "shares the leader's path, phase-offset" trick as oracle's
+ *    shard swarm, which reads as genuinely following the element rather
+ *    than wobbling near it on an unrelated schedule.
  */
 const MOTION: Partial<Record<ClassId, string[]>> = {
   oracle: Array(7).fill("shard-arc"),
   courier: ["walk"],
   archivist: Array(6).fill("glow-pulse"),
-  worldbuilder: [...Array(6), ...Array(5).fill("orbit-xz")],
 };
-const motionFor = (i: number) => MOTION[id]?.[i] ?? VARIANTS[i % VARIANTS.length];
+const motionFor = (i: number) => {
+  if (id === "worldbuilder" && i >= 6) {
+    const fragmentVariant = MOTION[id]?.[i - 6] ?? VARIANTS[(i - 6) % VARIANTS.length];
+    return `${fragmentVariant}-ebb`;
+  }
+  return MOTION[id]?.[i] ?? VARIANTS[i % VARIANTS.length];
+};
 
 /**
  * Per-prop animation-duration/delay, in seconds. Default staggers both
@@ -65,37 +73,18 @@ const motionFor = (i: number) => MOTION[id]?.[i] ?? VARIANTS[i % VARIANTS.length
  *  - archivist's runes share the lantern-glow's exact duration and zero
  *    delay, so every rune illuminates in the same beat as the lantern
  *    rather than drifting in and out of sync with it over time.
+ *  - worldbuilder's particles share their paired fragment's exact
+ *    duration too, offset by a fixed small lag, so they trail it at a
+ *    constant phase distance instead of running on an unrelated clock.
  */
 const timingFor = (i: number) => {
   if (id === "oracle") return { duration: 7, delay: i * 0.18 };
   if (id === "archivist") return { duration: 4.5, delay: 0 };
-  if (id === "worldbuilder" && i >= 6) return { duration: 9 + (i % 5) * 0.6, delay: -(i * 0.5) };
+  if (id === "worldbuilder" && i >= 6) {
+    const f = i - 6;
+    return { duration: 4.5 + (f % 4) * 0.8, delay: -(f * 0.6) + 0.35 };
+  }
   return { duration: 4.5 + (i % 4) * 0.8, delay: -(i * 0.6) };
-};
-
-/**
- * Worldbuilder's particle props (indices 6-10) need to sweep around their
- * paired fragment (index i-6), not just wobble near their own resting
- * spot -- a translate-only animation moves relative to where the element
- * already sits, so without this it just jitters near its natural position
- * instead of reading as circling the fragment. --ox/--oy is the particle's
- * own offset from the fragment (in canvas percent, which is directly
- * comparable to a CSS transform: translate(%) on these layers since every
- * layer shares the same canvas-to-box scale -- see spotSvg's comment for
- * why that equivalence holds), so prop-orbit-xz's keyframes can subtract
- * it out and swing the true path through the fragment's position instead.
- * --or is the orbit's radius, derived from that same natural distance so
- * each cluster's sweep roughly matches its original spread.
- */
-const orbitVarsFor = (i: number): Record<string, string> => {
-  if (id !== "worldbuilder" || i < 6) return {};
-  const fragment = props[i - 6];
-  const particle = props[i];
-  if (!fragment || !particle) return {};
-  const dx = particle.originPct.x - fragment.originPct.x;
-  const dy = particle.originPct.y - fragment.originPct.y;
-  const r = Math.min(9, Math.max(4, Math.hypot(dx, dy) * 1.3));
-  return { "--ox": `${dx}%`, "--oy": `${dy}%`, "--or": `${r}%` };
 };
 
 /**
@@ -247,7 +236,6 @@ const glintHalo = GLINT_HALO[id];
                 transformOrigin: `${prop.originPct.x}% ${prop.originPct.y}%`,
                 animationDuration: `${timing.duration}s`,
                 animationDelay: `${timing.delay}s`,
-                ...orbitVarsFor(i),
               }}
             />
           );
@@ -349,57 +337,43 @@ const glintHalo = GLINT_HALO[id];
     }
   }
 
-  /* Worldbuilder's orbit rings + gem flecks (see MOTION/orbitVarsFor
-     above): a true revolve around the paired fragment, viewed edge-on --
-     x traces the horizontal half of the circle (R*cos theta) while
-     scale/opacity trace the depth half (R*sin theta), so size/brightness
-     peak exactly when x crosses the fragment's center (passing in front)
-     and bottom out exactly when it crosses center the other way (passing
-     behind), not at the x extremes. --ox/--oy/--or (set per-particle via
-     orbitVarsFor) re-center that path on the fragment instead of the
-     particle's own resting spot -- without them this would just wobble in
-     place, since translate() moves relative to wherever the element
-     already sits. A small y wobble (R*sin 2*theta, twice the revolve's
-     frequency) rides along too, so it drifts a little rather than
-     pinning to a perfectly level plane, without competing with xz as the
-     dominant axis. `linear` keeps the angular speed constant, so it reads
-     as one steady revolution rather than a swing that eases in and out. */
-  .prop-orbit-xz {
-    animation: prop-orbit-xz 10s linear infinite;
+  /* Worldbuilder's orbit rings + gem flecks (see MOTION above): each
+     "-ebb" variant is a copy of the matching bob/drift/orbit keyframes
+     below -- the exact same translate/rotate path -- with an added
+     scale() pulse (the "inward/outward ebb and flow"). Sharing the
+     fragment's own path, not an independent one, is what makes this read
+     as following the element rather than moving on its own schedule;
+     timingFor gives it the fragment's exact duration plus a fixed delay
+     so it trails at a constant phase lag, same idea as oracle's shard
+     swarm. */
+  .prop-bob-ebb {
+    animation: prop-bob-ebb 5s ease-in-out infinite;
   }
-  @keyframes prop-orbit-xz {
-    0%,
-    100% {
-      transform: translate(calc(var(--or, 5%) - var(--ox, 0%)), calc(0% - var(--oy, 0%))) scale(1);
-      opacity: 0.85;
+  @keyframes prop-bob-ebb {
+    50% {
+      transform: translateY(-2.2%) rotate(2deg) scale(1.15);
     }
-    12.5% {
-      transform: translate(calc(var(--or, 5%) * 0.71 - var(--ox, 0%)), calc(1% - var(--oy, 0%))) scale(1.16);
-      opacity: 0.96;
+  }
+  .prop-drift-ebb {
+    animation: prop-drift-ebb 6s ease-in-out infinite;
+  }
+  @keyframes prop-drift-ebb {
+    50% {
+      transform: translate(1.6%, -1.4%) rotate(-3deg) scale(1.15);
     }
+  }
+  .prop-orbit-ebb {
+    animation: prop-orbit-ebb 7s ease-in-out infinite;
+  }
+  @keyframes prop-orbit-ebb {
     25% {
-      transform: translate(calc(0% - var(--ox, 0%)), calc(0% - var(--oy, 0%))) scale(1.22);
-      opacity: 1;
-    }
-    37.5% {
-      transform: translate(calc(var(--or, 5%) * -0.71 - var(--ox, 0%)), calc(-1% - var(--oy, 0%))) scale(1.16);
-      opacity: 0.96;
+      transform: translate(1.2%, -1.6%) rotate(4deg) scale(0.88);
     }
     50% {
-      transform: translate(calc(var(--or, 5%) * -1 - var(--ox, 0%)), calc(0% - var(--oy, 0%))) scale(1);
-      opacity: 0.85;
-    }
-    62.5% {
-      transform: translate(calc(var(--or, 5%) * -0.71 - var(--ox, 0%)), calc(1% - var(--oy, 0%))) scale(0.84);
-      opacity: 0.74;
+      transform: translateY(-2.4%) scale(1.18);
     }
     75% {
-      transform: translate(calc(0% - var(--ox, 0%)), calc(0% - var(--oy, 0%))) scale(0.78);
-      opacity: 0.7;
-    }
-    87.5% {
-      transform: translate(calc(var(--or, 5%) * 0.71 - var(--ox, 0%)), calc(-1% - var(--oy, 0%))) scale(0.84);
-      opacity: 0.74;
+      transform: translate(-1.2%, -1.6%) rotate(-4deg) scale(0.88);
     }
   }
 
