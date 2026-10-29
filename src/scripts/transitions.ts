@@ -130,7 +130,7 @@ const slash: Effect = async (ctx, root, backdrop) => {
 
 const fracture: Effect = async (ctx, root, backdrop) => {
   const { w, h } = { w: window.innerWidth, h: window.innerHeight };
-  const impactX = ctx.origin.left + ctx.origin.width * 0.78;
+  const impactX = ctx.origin.left + ctx.origin.width * 0.08;
   const crackY = Math.min(h * 0.88, Math.max(h * 0.45, ctx.origin.bottom - 46));
 
   // Jagged crack line across the whole viewport.
@@ -189,8 +189,8 @@ const fracture: Effect = async (ctx, root, backdrop) => {
 
 const network: Effect = async (ctx, root, backdrop) => {
   const { svg, w, h } = fx(root);
-  const ox = ctx.origin.left + ctx.origin.width * 0.8;
-  const oy = ctx.origin.top + ctx.origin.height * 0.28;
+  const ox = ctx.origin.left + ctx.origin.width * 0.85;
+  const oy = ctx.origin.top + ctx.origin.height * 0.16;
   const reach = Math.hypot(Math.max(ox, w - ox), Math.max(oy, h - oy)) + 40;
 
   backdrop.style.clipPath = `circle(0px at ${ox}px ${oy}px)`;
@@ -257,8 +257,8 @@ const network: Effect = async (ctx, root, backdrop) => {
 
 const hud: Effect = async (ctx, root, backdrop) => {
   const { svg, w, h } = fx(root);
-  const ox = ctx.origin.left + ctx.origin.width * 0.3;
-  const oy = ctx.origin.top + ctx.origin.height * 0.52;
+  const ox = ctx.origin.left + ctx.origin.width * 0.6;
+  const oy = ctx.origin.top + ctx.origin.height * 0.3;
   const r = 26;
 
   backdrop.style.clipPath = `inset(${oy - r}px ${w - ox - r}px ${h - oy - r}px ${ox - r}px round 8px)`;
@@ -308,8 +308,8 @@ const construct: Effect = async (ctx, root, backdrop) => {
   g.style.transformOrigin = `${cx}px ${cy}px`;
 
   // The first stroke: the compass draws a line from the character toward the horizon.
-  const ox = ctx.origin.left + ctx.origin.width * 0.78;
-  const oy = ctx.origin.top + ctx.origin.height * 0.55;
+  const ox = ctx.origin.left + ctx.origin.width * 0.18;
+  const oy = ctx.origin.top + ctx.origin.height * 0.35;
   const first = svgEl("path", { d: `M ${ox} ${oy} L ${cx} ${cy}`, class: "tx-line", stroke: "#f5c542", "stroke-width": 3 }, g);
 
   // Nested rectangles: a corridor receding to the vanishing point.

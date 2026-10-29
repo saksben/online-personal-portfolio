@@ -54,7 +54,7 @@ The design source of truth is the character bible. Below is what each class's ar
 
 The placeholder silhouettes show the intended prop placement for each class (e.g. sword on the right, shield on the left; shard upper-right of the Oracle; compass on the right for the Worldbuilder). Match those positions where practical so the transitions' origin points still line up:
 
-- `slash`, `construct` and `fracture` originate from the chosen slot's rectangle; `network` fires from ~80% across / 28% down the slot (the shard), `hud` from ~30% across / 52% down (the watch), `construct` from ~78% / 55% (the compass), `fracture` from the bottom of the slot at ~78% across (the drill). If the real art puts those props elsewhere, adjust the ratios at the top of the matching effect in `src/scripts/transitions.ts`.
+- `slash`, `construct` and `fracture` originate from the chosen slot's rectangle; `network` fires from ~85% across / 16% down the slot (the shard), `hud` from ~60% across / 30% down (the watch), `construct` from ~18% / 35% (the compass), `fracture` from the bottom of the slot at ~8% across (the drill). These were measured against the current AI-generated art (see ART-ASSETS.md's "normalizing raw AI renders" above); if new art moves a prop, re-measure and adjust the ratios at the top of the matching effect in `src/scripts/transitions.ts`.
 
 ## Not yet wired (future layers)
 
