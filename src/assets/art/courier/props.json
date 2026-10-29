@@ -1,0 +1,58 @@
+[
+  {
+    "file": "prop-0.png",
+    "originPct": {
+      "x": 24.2,
+      "y": 82.4
+    },
+    "boxPct": {
+      "left": 5.5,
+      "top": 72.7,
+      "width": 36.5,
+      "height": 20.2
+    },
+    "rawArea": 59009
+  },
+  {
+    "file": "prop-1.png",
+    "originPct": {
+      "x": 89.4,
+      "y": 27.9
+    },
+    "boxPct": {
+      "left": 84.3,
+      "top": 23.9,
+      "width": 10.2,
+      "height": 8
+    },
+    "rawArea": 11761
+  },
+  {
+    "file": "prop-2.png",
+    "originPct": {
+      "x": 89.6,
+      "y": 21.9
+    },
+    "boxPct": {
+      "left": 86.1,
+      "top": 18.9,
+      "width": 7.1,
+      "height": 6.2
+    },
+    "rawArea": 6560
+  },
+  {
+    "file": "prop-3.png",
+    "originPct": {
+      "x": 89.6,
+      "y": 33.3
+    },
+    "boxPct": {
+      "left": 86.9,
+      "top": 31.1,
+      "width": 5.5,
+      "height": 4.3
+    },
+    "rawArea": 3530
+  }
+]

@@ -56,15 +56,15 @@ The placeholder silhouettes show the intended prop placement for each class (e.g
 
 - `slash`, `construct` and `fracture` originate from the chosen slot's rectangle; `network` fires from ~85% across / 16% down the slot (the shard), `hud` from ~60% across / 30% down (the watch), `construct` from ~18% / 35% (the compass), `fracture` from the bottom of the slot at ~8% across (the drill). These were measured against the current AI-generated art (see ART-ASSETS.md's "normalizing raw AI renders" above); if new art moves a prop, re-measure and adjust the ratios at the top of the matching effect in `src/scripts/transitions.ts`.
 
-## Not yet wired (future layers)
+## Floating props (independent layers)
 
-The plan calls for layered assets (base + weapon + effect, animated with transforms). The current build uses one image per state. If you generate separate layers later, the natural extension points are:
+`scripts/prep-art.mjs` also separates free-floating elements (Oracle's shard, Worldbuilder's fragments, Courier's robot and HUD cards, Archivist's hologram and spare lantern) from the body, using connected-component labeling on the alpha mask: the largest opaque blob is "the body" (plus anything it's physically holding, which stays attached), and any other blob above ~3000px is exported as its own `props/prop-<n>.png` on the same 1200×2000 canvas as `idle.png`, with `props.json` recording each one's centroid (`originPct`, used as the CSS `transform-origin` so rotation pivots on the prop, not the canvas corner).
 
-- **Oracle AI shard** as its own transparent PNG, so it can orbit and react to the cursor.
-- **Props / effects** (2–4 props, 1–3 effects per character) as overlays on the slot.
-- **Transition art** (e.g. a slash streak sprite) as optional inputs to the existing effects.
+`src/lib/assets.ts`'s `characterProps()` reads this automatically — no wiring needed per character. `CharacterArt.astro` renders each as an always-visible layer with a looping bob/drift/orbit animation (`prefers-reduced-motion` already freezes all animation durations site-wide, see `global.css`). Paladin has no floating props (everything is worn/held gear), which is expected — the `fracture`/`network`/`hud`/`construct` transitions' origin points still come from the slot rectangle, not from a specific prop file.
 
-None of these are required for launch; the code-driven transitions already work without them.
+A prop that's a candidate (above the size floor) but not in the top `MAX_PROPS` is left alone — it stays baked into `idle.png` rather than being half-erased, so nothing visibly disappears from the character.
+
+**Not yet done:** `hover`/`selected` art, and body-tweened motion between states (see the repo's commit history / conversation notes for why a crossfade was chosen over interpolated poses — in short, independently-generated AI art doesn't share rigging, so tweening would warp rather than animate). Props are currently positioned against the `idle` pose only; if `hover`/`selected` art arrives with a different pose, re-run `prep-art.mjs` against whichever render should carry the props, or accept the slight misalignment during the hover/selected crossfade.
 
 ## Generation workflow
 

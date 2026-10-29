@@ -1,0 +1,30 @@
+[
+  {
+    "file": "prop-0.png",
+    "originPct": {
+      "x": 82.2,
+      "y": 47.5
+    },
+    "boxPct": {
+      "left": 78,
+      "top": 45.1,
+      "width": 8.6,
+      "height": 4.7
+    },
+    "rawArea": 7027
+  },
+  {
+    "file": "prop-1.png",
+    "originPct": {
+      "x": 85.5,
+      "y": 23.5
+    },
+    "boxPct": {
+      "left": 80.6,
+      "top": 21,
+      "width": 9.1,
+      "height": 5
+    },
+    "rawArea": 5961
+  }
+]

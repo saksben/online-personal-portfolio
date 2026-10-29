@@ -7,7 +7,7 @@
  */
 import { Image } from "astro:assets";
 import { characterById, type ClassId } from "@/data/characters";
-import { characterArt } from "@/lib/assets";
+import { characterArt, characterProps } from "@/lib/assets";
 import PlaceholderFigure from "./PlaceholderFigure.astro";
 
 interface Props {
@@ -24,6 +24,8 @@ const idle = characterArt(id, "idle");
 const hover = characterArt(id, "hover");
 const selected = characterArt(id, "selected");
 const alt = describe ? character.artAlt : "";
+const props = idle ? characterProps(id) : [];
+const VARIANTS = ["bob", "drift", "orbit"] as const;
 ---
 
 <div class="art" data-has-hover={hover ? "" : undefined} data-has-selected={selected ? "" : undefined}>
@@ -33,6 +35,20 @@ const alt = describe ? character.artAlt : "";
         <Image class="layer idle" src={idle} alt={alt} width={width} loading={loading} />
         {hover && <Image class="layer hover" src={hover} alt="" width={width} loading="lazy" />}
         {selected && <Image class="layer selected" src={selected} alt="" width={width} loading="lazy" />}
+        {props.map((prop, i) => (
+          <Image
+            class={`layer prop prop-${VARIANTS[i % VARIANTS.length]}`}
+            src={prop.image}
+            alt=""
+            width={width}
+            loading="lazy"
+            style={{
+              transformOrigin: `${prop.originPct.x}% ${prop.originPct.y}%`,
+              animationDuration: `${4.5 + (i % 4) * 0.8}s`,
+              animationDelay: `${-(i * 0.6)}s`,
+            }}
+          />
+        ))}
       </>
     ) : (
       <PlaceholderFigure id={id} label={describe ? character.artAlt : undefined} />
@@ -71,5 +87,43 @@ const alt = describe ? character.artAlt : "";
   }
   :global(li[data-selected="true"]) .art .selected {
     opacity: 1;
+  }
+
+  /* Free-floating props (see src/lib/assets.ts characterProps): independent,
+     looping motion so the art feels alive without needing tweened poses.
+     transform-origin is set inline per prop (its own centroid on the shared
+     canvas), so rotation pivots on the prop, not the image corner. */
+  .prop-bob {
+    animation: prop-bob 5s ease-in-out infinite;
+  }
+  .prop-drift {
+    animation: prop-drift 6s ease-in-out infinite;
+  }
+  .prop-orbit {
+    animation: prop-orbit 7s ease-in-out infinite;
+  }
+  @keyframes prop-bob {
+    50% {
+      transform: translateY(-2.2%) rotate(2deg);
+    }
+  }
+  @keyframes prop-drift {
+    50% {
+      transform: translate(1.6%, -1.4%) rotate(-3deg);
+    }
+  }
+  @keyframes prop-orbit {
+    25% {
+      transform: translate(1.2%, -1.6%) rotate(4deg);
+    }
+    50% {
+      transform: translateY(-2.4%);
+    }
+    75% {
+      transform: translate(-1.2%, -1.6%) rotate(-4deg);
+    }
+  }
+  :global(body[data-transition]) .prop {
+    animation: none !important;
   }
 </style>
