@@ -26,6 +26,22 @@ const selected = characterArt(id, "selected");
 const alt = describe ? character.artAlt : "";
 const props = idle ? characterProps(id) : [];
 const VARIANTS = ["bob", "drift", "orbit"] as const;
+/**
+ * Per-class motion overrides, by prop index (props are ordered largest
+ * component first, see prep-art.mjs). Anything not listed here falls back
+ * to VARIANTS, cycled by index. Tuned by eye against the actual art:
+ *  - oracle's shard should read as hanging independently behind him, not
+ *    tied to his breathing, so it gets more horizontal drift than vertical.
+ *  - courier's companion robot should read as pacing alongside him.
+ *  - archivist's schema runes/hologram should glow brighter at the peak of
+ *    their motion, like the lantern is revealing them.
+ */
+const MOTION: Partial<Record<ClassId, string[]>> = {
+  oracle: ["hover-wide"],
+  courier: ["walk"],
+  archivist: ["glow-pulse", "glow-pulse", "glow-pulse", "glow-pulse"],
+};
+const motionFor = (i: number) => MOTION[id]?.[i] ?? VARIANTS[i % VARIANTS.length];
 ---
 
 <div class="art" data-has-hover={hover ? "" : undefined} data-has-selected={selected ? "" : undefined}>
@@ -37,7 +53,7 @@ const VARIANTS = ["bob", "drift", "orbit"] as const;
         {selected && <Image class="layer selected" src={selected} alt="" width={width} loading="lazy" />}
         {props.map((prop, i) => (
           <Image
-            class={`layer prop prop-${VARIANTS[i % VARIANTS.length]}`}
+            class={`layer prop prop-${motionFor(i)}`}
             src={prop.image}
             alt=""
             width={width}
@@ -123,6 +139,61 @@ const VARIANTS = ["bob", "drift", "orbit"] as const;
       transform: translate(-1.2%, -1.6%) rotate(-4deg);
     }
   }
+
+  /* Oracle's shard: slow and lazy, more horizontal than vertical, irregular
+     stops so it reads as hanging out on its own rather than tied to his pose. */
+  .prop-hover-wide {
+    animation: prop-hover-wide 8.5s ease-in-out infinite;
+  }
+  @keyframes prop-hover-wide {
+    30% {
+      transform: translate(3.2%, -1%) rotate(3deg);
+    }
+    60% {
+      transform: translate(-2.6%, -2%) rotate(-2deg);
+    }
+    80% {
+      transform: translate(1.4%, -0.6%) rotate(1deg);
+    }
+  }
+
+  /* Courier's robot: a quick side-to-side pacing cycle with a little step
+     bounce, so it reads as walking alongside him rather than floating. */
+  .prop-walk {
+    animation: prop-walk 3.6s ease-in-out infinite;
+  }
+  @keyframes prop-walk {
+    0%,
+    100% {
+      transform: translate(-3%, 0) rotate(-4deg);
+    }
+    25% {
+      transform: translate(-1%, -1.4%) rotate(0deg);
+    }
+    50% {
+      transform: translate(3%, 0) rotate(4deg);
+    }
+    75% {
+      transform: translate(1%, -1.4%) rotate(0deg);
+    }
+  }
+
+  /* Archivist's hologram/runes: brighten and glow at the peak of the bob,
+     like the lantern is revealing them. */
+  .prop-glow-pulse {
+    animation: prop-glow-pulse 4.5s ease-in-out infinite;
+  }
+  @keyframes prop-glow-pulse {
+    0%,
+    100% {
+      filter: brightness(1) drop-shadow(0 0 0 transparent);
+    }
+    50% {
+      transform: translateY(-2.6%) rotate(2deg);
+      filter: brightness(1.7) drop-shadow(0 0 16px var(--c-glow));
+    }
+  }
+
   :global(body[data-transition]) .prop {
     animation: none !important;
   }

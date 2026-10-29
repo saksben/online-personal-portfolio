@@ -26,5 +26,33 @@
       "height": 5
     },
     "rawArea": 5961
+  },
+  {
+    "file": "prop-2.png",
+    "originPct": {
+      "x": 85.4,
+      "y": 27.4
+    },
+    "boxPct": {
+      "left": 83.5,
+      "top": 25.8,
+      "width": 3.7,
+      "height": 3.2
+    },
+    "rawArea": 2149
+  },
+  {
+    "file": "prop-3.png",
+    "originPct": {
+      "x": 60.4,
+      "y": 25.4
+    },
+    "boxPct": {
+      "left": 59.2,
+      "top": 23.9,
+      "width": 5.5,
+      "height": 3.5
+    },
+    "rawArea": 1294
   }
 ]

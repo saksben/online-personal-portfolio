@@ -28,8 +28,8 @@ import { CANVAS_W, CANVAS_H, findOpaqueBBox, computeTransform, labelComponents }
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const CLASSES = ["paladin", "archivist", "oracle", "courier", "worldbuilder"];
-const MIN_PROP_AREA = 3000; // raw px; filters antialiasing specks and tiny details
-const MAX_PROPS = 6;
+const MIN_PROP_AREA = 1000; // raw px; filters antialiasing specks and tiny details
+const MAX_PROPS = 8;
 
 const outArg = process.argv.indexOf("--out");
 const outDir = outArg !== -1 ? path.resolve(process.argv[outArg + 1]) : path.join(ROOT, "scripts", ".art-staging");
