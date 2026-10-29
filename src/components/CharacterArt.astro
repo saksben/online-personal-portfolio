@@ -329,44 +329,46 @@ const glintHalo = GLINT_HALO[id];
      the depth half (R*sin theta), so size/brightness peak exactly when x
      crosses center (passing in front) and bottom out exactly when x
      crosses center the other way (passing behind), not at the x extremes.
-     No vertical drift -- the revolve stays in the xz plane. `linear` keeps
-     the angular speed constant, so it reads as one steady revolution
-     rather than a swing that eases in and out. */
+     A small y wobble (R*sin 2*theta, twice the revolve's frequency) rides
+     along too, so it drifts a little with the fragment's own path without
+     competing with xz as the dominant axis. `linear` keeps the angular
+     speed constant, so it reads as one steady revolution rather than a
+     swing that eases in and out. */
   .prop-orbit-xz {
     animation: prop-orbit-xz 10s linear infinite;
   }
   @keyframes prop-orbit-xz {
     0%,
     100% {
-      transform: translateX(2.8%) scale(1);
+      transform: translate(2.8%, 0%) scale(1);
       opacity: 0.85;
     }
     12.5% {
-      transform: translateX(2%) scale(1.16);
+      transform: translate(2%, 1.2%) scale(1.16);
       opacity: 0.96;
     }
     25% {
-      transform: translateX(0%) scale(1.22);
+      transform: translate(0%, 0%) scale(1.22);
       opacity: 1;
     }
     37.5% {
-      transform: translateX(-2%) scale(1.16);
+      transform: translate(-2%, -1.2%) scale(1.16);
       opacity: 0.96;
     }
     50% {
-      transform: translateX(-2.8%) scale(1);
+      transform: translate(-2.8%, 0%) scale(1);
       opacity: 0.85;
     }
     62.5% {
-      transform: translateX(-2%) scale(0.84);
+      transform: translate(-2%, 1.2%) scale(0.84);
       opacity: 0.74;
     }
     75% {
-      transform: translateX(0%) scale(0.78);
+      transform: translate(0%, 0%) scale(0.78);
       opacity: 0.7;
     }
     87.5% {
-      transform: translateX(2%) scale(0.84);
+      transform: translate(2%, -1.2%) scale(0.84);
       opacity: 0.74;
     }
   }
