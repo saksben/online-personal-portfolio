@@ -74,6 +74,31 @@ const timingFor = (i: number) => {
 };
 
 /**
+ * Worldbuilder's particle props (indices 6-10) need to sweep around their
+ * paired fragment (index i-6), not just wobble near their own resting
+ * spot -- a translate-only animation moves relative to where the element
+ * already sits, so without this it just jitters near its natural position
+ * instead of reading as circling the fragment. --ox/--oy is the particle's
+ * own offset from the fragment (in canvas percent, which is directly
+ * comparable to a CSS transform: translate(%) on these layers since every
+ * layer shares the same canvas-to-box scale -- see spotSvg's comment for
+ * why that equivalence holds), so prop-orbit-xz's keyframes can subtract
+ * it out and swing the true path through the fragment's position instead.
+ * --or is the orbit's radius, derived from that same natural distance so
+ * each cluster's sweep roughly matches its original spread.
+ */
+const orbitVarsFor = (i: number): Record<string, string> => {
+  if (id !== "worldbuilder" || i < 6) return {};
+  const fragment = props[i - 6];
+  const particle = props[i];
+  if (!fragment || !particle) return {};
+  const dx = particle.originPct.x - fragment.originPct.x;
+  const dy = particle.originPct.y - fragment.originPct.y;
+  const r = Math.min(9, Math.max(4, Math.hypot(dx, dy) * 1.3));
+  return { "--ox": `${dx}%`, "--oy": `${dy}%`, "--or": `${r}%` };
+};
+
+/**
  * CSS-only glow (no separate art) positioned over a spot in the idle art
  * itself, for signature items that are held/worn (fused into the body
  * render) rather than a separate floating prop layer:
@@ -222,6 +247,7 @@ const glintHalo = GLINT_HALO[id];
                 transformOrigin: `${prop.originPct.x}% ${prop.originPct.y}%`,
                 animationDuration: `${timing.duration}s`,
                 animationDelay: `${timing.delay}s`,
+                ...orbitVarsFor(i),
               }}
             />
           );
@@ -323,52 +349,56 @@ const glintHalo = GLINT_HALO[id];
     }
   }
 
-  /* Worldbuilder's orbit rings + gem flecks (see MOTION above): a tight
-     circular revolve around the fragment, viewed edge-on -- x traces the
-     horizontal half of the circle (R*cos theta) while scale/opacity trace
-     the depth half (R*sin theta), so size/brightness peak exactly when x
-     crosses center (passing in front) and bottom out exactly when x
-     crosses center the other way (passing behind), not at the x extremes.
-     A small y wobble (R*sin 2*theta, twice the revolve's frequency) rides
-     along too, so it drifts a little with the fragment's own path without
-     competing with xz as the dominant axis. `linear` keeps the angular
-     speed constant, so it reads as one steady revolution rather than a
-     swing that eases in and out. */
+  /* Worldbuilder's orbit rings + gem flecks (see MOTION/orbitVarsFor
+     above): a true revolve around the paired fragment, viewed edge-on --
+     x traces the horizontal half of the circle (R*cos theta) while
+     scale/opacity trace the depth half (R*sin theta), so size/brightness
+     peak exactly when x crosses the fragment's center (passing in front)
+     and bottom out exactly when it crosses center the other way (passing
+     behind), not at the x extremes. --ox/--oy/--or (set per-particle via
+     orbitVarsFor) re-center that path on the fragment instead of the
+     particle's own resting spot -- without them this would just wobble in
+     place, since translate() moves relative to wherever the element
+     already sits. A small y wobble (R*sin 2*theta, twice the revolve's
+     frequency) rides along too, so it drifts a little rather than
+     pinning to a perfectly level plane, without competing with xz as the
+     dominant axis. `linear` keeps the angular speed constant, so it reads
+     as one steady revolution rather than a swing that eases in and out. */
   .prop-orbit-xz {
     animation: prop-orbit-xz 10s linear infinite;
   }
   @keyframes prop-orbit-xz {
     0%,
     100% {
-      transform: translate(2.8%, 0%) scale(1);
+      transform: translate(calc(var(--or, 5%) - var(--ox, 0%)), calc(0% - var(--oy, 0%))) scale(1);
       opacity: 0.85;
     }
     12.5% {
-      transform: translate(2%, 1.2%) scale(1.16);
+      transform: translate(calc(var(--or, 5%) * 0.71 - var(--ox, 0%)), calc(1% - var(--oy, 0%))) scale(1.16);
       opacity: 0.96;
     }
     25% {
-      transform: translate(0%, 0%) scale(1.22);
+      transform: translate(calc(0% - var(--ox, 0%)), calc(0% - var(--oy, 0%))) scale(1.22);
       opacity: 1;
     }
     37.5% {
-      transform: translate(-2%, -1.2%) scale(1.16);
+      transform: translate(calc(var(--or, 5%) * -0.71 - var(--ox, 0%)), calc(-1% - var(--oy, 0%))) scale(1.16);
       opacity: 0.96;
     }
     50% {
-      transform: translate(-2.8%, 0%) scale(1);
+      transform: translate(calc(var(--or, 5%) * -1 - var(--ox, 0%)), calc(0% - var(--oy, 0%))) scale(1);
       opacity: 0.85;
     }
     62.5% {
-      transform: translate(-2%, 1.2%) scale(0.84);
+      transform: translate(calc(var(--or, 5%) * -0.71 - var(--ox, 0%)), calc(1% - var(--oy, 0%))) scale(0.84);
       opacity: 0.74;
     }
     75% {
-      transform: translate(0%, 0%) scale(0.78);
+      transform: translate(calc(0% - var(--ox, 0%)), calc(0% - var(--oy, 0%))) scale(0.78);
       opacity: 0.7;
     }
     87.5% {
-      transform: translate(2%, -1.2%) scale(0.84);
+      transform: translate(calc(var(--or, 5%) * 0.71 - var(--ox, 0%)), calc(-1% - var(--oy, 0%))) scale(0.84);
       opacity: 0.74;
     }
   }
