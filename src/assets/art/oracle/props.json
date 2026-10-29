@@ -12,5 +12,89 @@
       "height": 18.1
     },
     "rawArea": 34121
+  },
+  {
+    "file": "prop-1.png",
+    "originPct": {
+      "x": 66.6,
+      "y": 29.8
+    },
+    "boxPct": {
+      "left": 65.8,
+      "top": 28.6,
+      "width": 1.9,
+      "height": 2.3
+    },
+    "rawArea": 445
+  },
+  {
+    "file": "prop-2.png",
+    "originPct": {
+      "x": 82,
+      "y": 28.2
+    },
+    "boxPct": {
+      "left": 81.2,
+      "top": 27.3,
+      "width": 1.7,
+      "height": 2
+    },
+    "rawArea": 375
+  },
+  {
+    "file": "prop-3.png",
+    "originPct": {
+      "x": 79.1,
+      "y": 30.9
+    },
+    "boxPct": {
+      "left": 78.5,
+      "top": 30.2,
+      "width": 1.2,
+      "height": 1.5
+    },
+    "rawArea": 247
+  },
+  {
+    "file": "prop-4.png",
+    "originPct": {
+      "x": 79.4,
+      "y": 19.3
+    },
+    "boxPct": {
+      "left": 78.9,
+      "top": 18.6,
+      "width": 1.1,
+      "height": 1.6
+    },
+    "rawArea": 232
+  },
+  {
+    "file": "prop-5.png",
+    "originPct": {
+      "x": 64.9,
+      "y": 21.9
+    },
+    "boxPct": {
+      "left": 64.3,
+      "top": 21.1,
+      "width": 1.1,
+      "height": 1.5
+    },
+    "rawArea": 225
+  },
+  {
+    "file": "prop-6.png",
+    "originPct": {
+      "x": 64.1,
+      "y": 27.1
+    },
+    "boxPct": {
+      "left": 63.6,
+      "top": 26.5,
+      "width": 1.1,
+      "height": 1.2
+    },
+    "rawArea": 156
   }
 ]

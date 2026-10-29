@@ -30,6 +30,10 @@ const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const CLASSES = ["paladin", "archivist", "oracle", "courier", "worldbuilder"];
 const MIN_PROP_AREA = 1000; // raw px; filters antialiasing specks and tiny details
 const MAX_PROPS = 8;
+// Oracle's six tiny orbiting shard fragments are each only 150-450px (vs.
+// 1000+ for every other class's props), so they need a lower floor just for
+// this class or they stay fused into idle.png with no independent motion.
+const MIN_PROP_AREA_OVERRIDES = { oracle: 100 };
 
 const outArg = process.argv.indexOf("--out");
 const outDir = outArg !== -1 ? path.resolve(process.argv[outArg + 1]) : path.join(ROOT, "scripts", ".art-staging");
@@ -49,7 +53,8 @@ async function prepOne(id) {
   const { labels, components } = labelComponents(data, width, height, channels);
   components.sort((a, b) => b.count - a.count);
   const body = components[0];
-  const propCandidates = components.slice(1).filter((c) => c.count >= MIN_PROP_AREA).slice(0, MAX_PROPS);
+  const minArea = MIN_PROP_AREA_OVERRIDES[id] ?? MIN_PROP_AREA;
+  const propCandidates = components.slice(1).filter((c) => c.count >= minArea).slice(0, MAX_PROPS);
 
   // Raw-space -> shared-canvas-space, matching computeTransform's crop+scale+placement.
   const toCanvas = (x, y) => ({
