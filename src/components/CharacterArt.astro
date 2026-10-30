@@ -70,35 +70,45 @@ const motionFor = (i: number) => {
 
 /**
  * World-fragments orbit the character on one shared circle (CSS
- * offset-path), centered on the fragments' own centroid and sized to clear
- * the art's side margins (see ART-ASSETS.md's ~5% margin rule). Each
- * fragment's starting angle is measured from its *current* hand-placed
- * originPct, in canvas-pixel space since x/y% map to different pixel scales
- * on this non-square canvas, then converted straight to an offset-distance
- * phase -- arc length is proportional to angle on a true circle, so no
- * easing curve is needed to keep constant angular speed. Every fragment
- * therefore starts exactly where its art already sits and just orbits on
- * from there, instead of snapping to an arbitrary evenly-spaced position.
- */
+ * offset-path), centered on the five orbiting fragments' own centroid (not
+ * index 5 -- that's the gateway shard now, recomposited to sit at the
+ * gateway's position, so including it here would pull the center toward
+ * the gateway instead of the actual orbiting group) and sized to clear the
+ * art's side margins (see ART-ASSETS.md's ~5% margin rule).
+ *
+ * Each fragment's starting angle, measured from its *current* hand-placed
+ * originPct, decides only its *order* around the circle, not its exact
+ * starting position: delays are then reassigned to evenly spaced angles
+ * (360/5 = 72° apart) in that same order. Using the raw measured angles
+ * directly, as an earlier version did, packed three fragments within ~120°
+ * of each other and the other two within ~35°, leaving two near-empty arcs
+ * between them -- which reads as two separate clusters orbiting, each on
+ * its own circle, rather than five fragments evenly sharing the one
+ * circle. Evenly spacing them (while keeping their relative order, so nothing
+ * crosses another fragment's path) fixes that without an arbitrary snap. */
 const ORBIT_T = 26; // seconds per revolution, shared by every fragment + its particle
 let orbitCx = 50;
 let orbitCy = 50;
 const orbitR = 22; // % of the canvas diagonal -- offset-path circle()'s radius unit
-/** Starting angle, as an offset-path delay, for a point relative to the
- * shared circle's center (orbitCx/orbitCy) -- see the comment above. */
-const angleDelay = (originPct: { x: number; y: number }, centerPx: { x: number; y: number }) => {
+/** Angle (radians, atan2 convention) of a point relative to the shared
+ * circle's center (orbitCx/orbitCy) -- see the comment above. */
+const angleOf = (originPct: { x: number; y: number }, centerPx: { x: number; y: number }) => {
   const dx = (originPct.x / 100) * CANVAS_W - centerPx.x;
   const dy = (originPct.y / 100) * CANVAS_H - centerPx.y;
-  const turns = Math.atan2(dy, dx) / (2 * Math.PI);
-  return -(((turns % 1) + 1) % 1) * ORBIT_T;
+  return Math.atan2(dy, dx);
 };
 let orbitDelay: number[] = [];
-if (id === "worldbuilder" && props.length >= 6) {
-  const fragments = props.slice(0, 6);
+if (id === "worldbuilder" && props.length >= 5) {
+  const fragments = props.slice(0, 5);
   orbitCx = fragments.reduce((sum, p) => sum + p.originPct.x, 0) / fragments.length;
   orbitCy = fragments.reduce((sum, p) => sum + p.originPct.y, 0) / fragments.length;
   const centerPx = { x: (orbitCx / 100) * CANVAS_W, y: (orbitCy / 100) * CANVAS_H };
-  orbitDelay = fragments.map((p) => angleDelay(p.originPct, centerPx));
+  const angles = fragments.map((p) => angleOf(p.originPct, centerPx));
+  const order = angles.map((_, i) => i).sort((a, b) => angles[a] - angles[b]);
+  orbitDelay = new Array(fragments.length);
+  order.forEach((fragmentIndex, rank) => {
+    orbitDelay[fragmentIndex] = -((rank / fragments.length) * ORBIT_T);
+  });
 }
 
 /**
@@ -116,12 +126,12 @@ if (id === "worldbuilder" && props.length >= 6) {
  *    rather than drifting in and out of sync with it over time.
  *  - worldbuilder's fragments all share one orbit duration (ORBIT_T) so
  *    they stay locked to the same circle instead of drifting apart over
- *    time; each fragment's delay is its own measured starting angle
- *    (orbitDelay above), and its paired particle gets that same delay plus
- *    a small fixed lag so it trails the fragment around the ring. The two
- *    gateway shards (indices 5 and 11, static gateway's "static" class
- *    needs no timing at all) just get a short duration and a small
- *    stagger between them -- they aren't on the big circle.
+ *    time; each fragment's delay is its evenly-spaced slot (orbitDelay
+ *    above), and its paired particle gets that same delay plus a small
+ *    fixed lag so it trails the fragment around the ring. The two gateway
+ *    shards (indices 5 and 11) aren't on the big circle at all, so they
+ *    just get a short duration and a small stagger between them; the real
+ *    gateway (index 12, "static") needs no timing at all.
  */
 const timingFor = (i: number) => {
   if (id === "oracle") return { duration: 7, delay: i * 0.18 };
