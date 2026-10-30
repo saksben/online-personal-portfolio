@@ -315,32 +315,6 @@ const glintHalo = GLINT_HALO[id];
   .selected {
     opacity: 0;
   }
-  /* Explicit stacking ladder matching the DOM order below, so worldbuilder's
-     orbiting props (see .prop-orbit-xy) can dip to z-index: 0 -- behind the
-     idle/hover art -- for part of their path without disturbing every other
-     class, which just keeps the default z-index: 2 and stays on top like
-     before. */
-  .idle {
-    z-index: 1;
-  }
-  .hover {
-    z-index: 2;
-  }
-  .selected {
-    z-index: 3;
-  }
-  .lantern-glow {
-    z-index: 4;
-  }
-  .glint-halo {
-    z-index: 5;
-  }
-  .glint-core {
-    z-index: 6;
-  }
-  .prop {
-    z-index: 7;
-  }
   :global(li[data-current="true"]) .art[data-has-hover] .idle {
     opacity: 0;
   }
@@ -429,17 +403,14 @@ const glintHalo = GLINT_HALO[id];
      toward and away from the center, which is explicitly not wanted here
      (see the commit history), even scoped to just the particles.
 
-     z-index flips from 7 (front, matching every other prop) to 0 (behind
-     the idle art, z-index: 1) for the half of the circle where y >= center
-     -- offset-distance 0-50% sweeps through the bottom of the circle, which
-     reads as "nearer, passing in front"; 50-100% sweeps the top, "farther,
-     passing behind" -- giving the flat xy circle an actual z-axis read as
-     fragments cross the body. Each z-index is set at two adjacent keyframe
-     points (e.g. 49.9%/50%) rather than one, because browsers interpolate
-     a non-interpolable property like z-index by flipping at the *midpoint*
-     between its two surrounding keyframes, not at either one's own
-     percentage -- two points 0.1% apart pins that flip to (effectively)
-     exactly 50%/100%. */
+     Every fragment/particle stays in front of the body for its entire
+     loop, same as every other character's props (default stacking order).
+     An earlier version sent fragments behind the idle art for half the
+     circle as a z-axis depth cue -- but passing behind the body occludes
+     most of the art, leaving just a sliver visible, which reads as the
+     element shrinking and pulling in toward the center. That's the
+     opposite of the plain, constant-radius circular orbit wanted here, so
+     it's gone. */
   .prop-orbit-xy,
   .prop-orbit-xy-ebb {
     offset-path: circle(var(--orbitR, 22%) at var(--orbitCx, 50%) var(--orbitCy, 50%));
@@ -449,50 +420,16 @@ const glintHalo = GLINT_HALO[id];
     animation: prop-orbit-xy 26s linear infinite;
   }
   @keyframes prop-orbit-xy {
-    0% {
-      offset-distance: 0%;
-      z-index: 7;
-    }
-    49.9% {
-      offset-distance: 49.9%;
-      z-index: 7;
-    }
-    50% {
-      offset-distance: 50%;
-      z-index: 0;
-    }
-    99.9% {
-      offset-distance: 99.9%;
-      z-index: 0;
-    }
-    100% {
+    to {
       offset-distance: 100%;
-      z-index: 7;
     }
   }
   .prop-orbit-xy-ebb {
     animation: prop-orbit-xy-ebb 26s linear infinite;
   }
   @keyframes prop-orbit-xy-ebb {
-    0% {
-      offset-distance: 0%;
-      z-index: 7;
-    }
-    49.9% {
-      offset-distance: 49.9%;
-      z-index: 7;
-    }
-    50% {
-      offset-distance: 50%;
-      z-index: 0;
-    }
-    99.9% {
-      offset-distance: 99.9%;
-      z-index: 0;
-    }
-    100% {
+    to {
       offset-distance: 100%;
-      z-index: 7;
     }
   }
 
