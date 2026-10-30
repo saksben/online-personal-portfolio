@@ -424,10 +424,10 @@ const glintHalo = GLINT_HALO[id];
      from right where it already sits. Its paired orbit ring/gem fleck
      (the "-ebb" variant) rides the exact same circle, phase-delayed, so it
      reads as trailing the fragment around the ring rather than moving on
-     an unrelated schedule. Only the particle ("-ebb") rides a scale()
-     pulse alongside it -- the inward/outward ebb and flow -- the fragment
-     itself (prop-orbit-xy) stays a constant size; it's the particles that
-     ebb and flow, not the elements they trail.
+     an unrelated schedule. Neither rides a scale() pulse -- a growing/
+     shrinking object moving along a flat circular path reads as spiraling
+     toward and away from the center, which is explicitly not wanted here
+     (see the commit history), even scoped to just the particles.
 
      z-index flips from 7 (front, matching every other prop) to 0 (behind
      the idle art, z-index: 1) for the half of the circle where y >= center
@@ -477,7 +477,6 @@ const glintHalo = GLINT_HALO[id];
     0% {
       offset-distance: 0%;
       z-index: 7;
-      transform: scale(1);
     }
     49.9% {
       offset-distance: 49.9%;
@@ -486,7 +485,6 @@ const glintHalo = GLINT_HALO[id];
     50% {
       offset-distance: 50%;
       z-index: 0;
-      transform: scale(1.12);
     }
     99.9% {
       offset-distance: 99.9%;
@@ -495,7 +493,6 @@ const glintHalo = GLINT_HALO[id];
     100% {
       offset-distance: 100%;
       z-index: 7;
-      transform: scale(1);
     }
   }
 
