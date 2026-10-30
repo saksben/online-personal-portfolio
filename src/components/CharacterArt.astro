@@ -48,17 +48,10 @@ const VARIANTS = ["bob", "drift", "orbit"] as const;
  *    (a stone ruin) looks similar to the actual gateway but isn't it -- the
  *    real gateway (with its glowing portal) was never auto-extracted at
  *    all, since it stayed fused to the body in prep-art.mjs's connected-
- *    component pass; it's manually extracted as index 12, and also joins
- *    this same orbit. Indices 5 and 11 are two small crystal shards that
- *    belong to *that* gateway (index 12), not the character -- they get
- *    their own "gateway-shard" motion instead, a tight local loop around
- *    the gateway's own position rather than the character's. They use
- *    *different* classes (gateway-shard / gateway-shard-b) rather than a
- *    shared class with staggered delay, because delay would also shift
- *    *which point of the big circle* they sit on -- they need the exact
- *    same delay as the gateway (gatewayDelay) to stay locked to it, so the
- *    two shards' local loops are staggered by phase-shifting the keyframes
- *    themselves instead (see the CSS below).
+ *    component pass; it's manually extracted as index 12, but stays
+ *    static ("static" below), not part of the orbit -- only its two small
+ *    crystal shards (indices 5 and 11) move, a tight local loop right at
+ *    the gateway's position (see "gateway-shard" in the CSS below).
  */
 const MOTION: Partial<Record<ClassId, string[]>> = {
   oracle: Array(7).fill("shard-arc"),
@@ -69,7 +62,8 @@ const motionFor = (i: number) => {
   if (id === "worldbuilder") {
     if (i === 5) return "gateway-shard";
     if (i === 11) return "gateway-shard-b";
-    return i < 6 || i === 12 ? "orbit-xy" : "orbit-xy-ebb";
+    if (i === 12) return "static";
+    return i < 6 ? "orbit-xy" : "orbit-xy-ebb";
   }
   return MOTION[id]?.[i] ?? VARIANTS[i % VARIANTS.length];
 };
@@ -99,16 +93,12 @@ const angleDelay = (originPct: { x: number; y: number }, centerPx: { x: number; 
   return -(((turns % 1) + 1) % 1) * ORBIT_T;
 };
 let orbitDelay: number[] = [];
-/** Index 12 is the real gateway (see MOTION comment below); indices 5 and
- * 11 are its two shards, which need this exact delay too. */
-let gatewayDelay = 0;
 if (id === "worldbuilder" && props.length >= 6) {
   const fragments = props.slice(0, 6);
   orbitCx = fragments.reduce((sum, p) => sum + p.originPct.x, 0) / fragments.length;
   orbitCy = fragments.reduce((sum, p) => sum + p.originPct.y, 0) / fragments.length;
   const centerPx = { x: (orbitCx / 100) * CANVAS_W, y: (orbitCy / 100) * CANVAS_H };
   orbitDelay = fragments.map((p) => angleDelay(p.originPct, centerPx));
-  if (props[12]) gatewayDelay = angleDelay(props[12].originPct, centerPx);
 }
 
 /**
@@ -128,18 +118,17 @@ if (id === "worldbuilder" && props.length >= 6) {
  *    they stay locked to the same circle instead of drifting apart over
  *    time; each fragment's delay is its own measured starting angle
  *    (orbitDelay above), and its paired particle gets that same delay plus
- *    a small fixed lag so it trails the fragment around the ring. The real
- *    gateway (index 12) uses its own measured angle (gatewayDelay) the
- *    same way a fragment does. Its two shards (indices 5 and 11) reuse
- *    that delay *exactly*, no added offset, so they sit on the same point
- *    of the big circle as the gateway at every instant; their local loops
- *    are staggered via separate keyframes instead (see the CSS).
+ *    a small fixed lag so it trails the fragment around the ring. The two
+ *    gateway shards (indices 5 and 11, static gateway's "static" class
+ *    needs no timing at all) just get a short duration and a small
+ *    stagger between them -- they aren't on the big circle.
  */
 const timingFor = (i: number) => {
   if (id === "oracle") return { duration: 7, delay: i * 0.18 };
   if (id === "archivist") return { duration: 4.5, delay: 0 };
   if (id === "worldbuilder") {
-    if (i === 5 || i === 11 || i === 12) return { duration: ORBIT_T, delay: gatewayDelay };
+    if (i === 5) return { duration: 5, delay: 0 };
+    if (i === 11) return { duration: 5, delay: 0.5 };
     const f = i < 6 ? i : i - 6;
     const lag = i < 6 ? 0 : 0.5;
     return { duration: ORBIT_T, delay: (orbitDelay[f] ?? 0) + lag };
@@ -504,164 +493,54 @@ const glintHalo = GLINT_HALO[id];
     }
   }
 
-  /* The gateway's two small shards (MOTION indices 5 and 11, see above):
-     they ride the *same* big circle as the gateway itself, at the gateway's
-     *exact* delay (see timingFor), so they sit on the same point of the
-     circle as the gateway at every instant -- staying locked to its moving
-     position rather than sweeping through their own nearby point on the
-     circle. A small, fast translate() loop (four cardinal points, repeated
-     5x per 26s revolution) layers on top via plain transform -- offset-path
-     only positions the box, so a transform on top of it composes rather
-     than overrides, the same trick prop-orbit-xy-ebb used for its old scale
-     pulse -- reading as two shards actually circling the gateway. The "-b"
-     variant is identical except its four translate() points are rotated 90°
-     (started one step later in the same four-point cycle), so the two
-     shards loop out of phase with each other instead of overlapping --
-     their delay can't do this staggering (see the comment above) since any
-     difference there would also separate them from the gateway. */
-  .prop-gateway-shard,
-  .prop-gateway-shard-b {
-    offset-path: circle(var(--orbitR, 22%) at var(--orbitCx, 50%) var(--orbitCy, 50%));
-    offset-rotate: 0deg;
+  /* The real gateway (MOTION index 12) stays put -- no animation at all,
+     same as it was before it got pulled out of idle.png. */
+  .prop-static {
   }
+
+  /* The gateway's two small shards (MOTION indices 5 and 11, see above):
+     a small, local translate() loop (four cardinal points) right at their
+     resting position -- which is already the gateway's position, since
+     their art was recomposited to sit there (see props.json/prop-prep
+     notes). No offset-path, no shared circle: they just hover in place
+     next to the static gateway. The "-b" variant is identical except its
+     four points are rotated 90° (started one step later in the same
+     four-point cycle), so the two shards loop out of phase with each
+     other instead of moving in lockstep. */
   .prop-gateway-shard {
-    animation: prop-gateway-shard 26s linear infinite;
+    animation: prop-gateway-shard 5s ease-in-out infinite;
   }
   @keyframes prop-gateway-shard {
-    0% {
-      offset-distance: 0%;
-      transform: translate(3.75%, 0%);
-    }
-    5% {
-      transform: translate(0%, 2.25%);
-    }
-    10% {
-      transform: translate(-3.75%, 0%);
-    }
-    15% {
-      transform: translate(0%, -2.25%);
-    }
-    20% {
+    0%,
+    100% {
       transform: translate(3.75%, 0%);
     }
     25% {
       transform: translate(0%, 2.25%);
     }
-    30% {
-      transform: translate(-3.75%, 0%);
-    }
-    35% {
-      transform: translate(0%, -2.25%);
-    }
-    40% {
-      transform: translate(3.75%, 0%);
-    }
-    45% {
-      transform: translate(0%, 2.25%);
-    }
     50% {
-      transform: translate(-3.75%, 0%);
-    }
-    55% {
-      transform: translate(0%, -2.25%);
-    }
-    60% {
-      transform: translate(3.75%, 0%);
-    }
-    65% {
-      transform: translate(0%, 2.25%);
-    }
-    70% {
       transform: translate(-3.75%, 0%);
     }
     75% {
       transform: translate(0%, -2.25%);
-    }
-    80% {
-      transform: translate(3.75%, 0%);
-    }
-    85% {
-      transform: translate(0%, 2.25%);
-    }
-    90% {
-      transform: translate(-3.75%, 0%);
-    }
-    95% {
-      transform: translate(0%, -2.25%);
-    }
-    100% {
-      offset-distance: 100%;
-      transform: translate(3.75%, 0%);
     }
   }
   .prop-gateway-shard-b {
-    animation: prop-gateway-shard-b 26s linear infinite;
+    animation: prop-gateway-shard-b 5s ease-in-out infinite;
   }
   @keyframes prop-gateway-shard-b {
-    0% {
-      offset-distance: 0%;
-      transform: translate(0%, -2.25%);
-    }
-    5% {
-      transform: translate(3.75%, 0%);
-    }
-    10% {
-      transform: translate(0%, 2.25%);
-    }
-    15% {
-      transform: translate(-3.75%, 0%);
-    }
-    20% {
+    0%,
+    100% {
       transform: translate(0%, -2.25%);
     }
     25% {
       transform: translate(3.75%, 0%);
     }
-    30% {
-      transform: translate(0%, 2.25%);
-    }
-    35% {
-      transform: translate(-3.75%, 0%);
-    }
-    40% {
-      transform: translate(0%, -2.25%);
-    }
-    45% {
-      transform: translate(3.75%, 0%);
-    }
     50% {
-      transform: translate(0%, 2.25%);
-    }
-    55% {
-      transform: translate(-3.75%, 0%);
-    }
-    60% {
-      transform: translate(0%, -2.25%);
-    }
-    65% {
-      transform: translate(3.75%, 0%);
-    }
-    70% {
       transform: translate(0%, 2.25%);
     }
     75% {
       transform: translate(-3.75%, 0%);
-    }
-    80% {
-      transform: translate(0%, -2.25%);
-    }
-    85% {
-      transform: translate(3.75%, 0%);
-    }
-    90% {
-      transform: translate(0%, 2.25%);
-    }
-    95% {
-      transform: translate(-3.75%, 0%);
-    }
-    100% {
-      offset-distance: 100%;
-      transform: translate(0%, -2.25%);
     }
   }
 
