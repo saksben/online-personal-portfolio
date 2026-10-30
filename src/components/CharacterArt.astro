@@ -83,7 +83,7 @@ const motionFor = (i: number) => {
 const ORBIT_T = 26; // seconds per revolution, shared by every fragment + its particle
 let orbitCx = 50;
 let orbitCy = 50;
-const orbitR = 28; // % of the canvas diagonal -- offset-path circle()'s radius unit
+const orbitR = 22; // % of the canvas diagonal -- offset-path circle()'s radius unit
 /** Starting angle, as an offset-path delay, for a point relative to the
  * shared circle's center (orbitCx/orbitCy) -- see the comment above. */
 const angleDelay = (originPct: { x: number; y: number }, centerPx: { x: number; y: number }) => {
@@ -424,7 +424,10 @@ const glintHalo = GLINT_HALO[id];
      from right where it already sits. Its paired orbit ring/gem fleck
      (the "-ebb" variant) rides the exact same circle, phase-delayed, so it
      reads as trailing the fragment around the ring rather than moving on
-     an unrelated schedule.
+     an unrelated schedule. Only the particle ("-ebb") rides a scale()
+     pulse alongside it -- the inward/outward ebb and flow -- the fragment
+     itself (prop-orbit-xy) stays a constant size; it's the particles that
+     ebb and flow, not the elements they trail.
 
      z-index flips from 7 (front, matching every other prop) to 0 (behind
      the idle art, z-index: 1) for the half of the circle where y >= center
@@ -439,7 +442,7 @@ const glintHalo = GLINT_HALO[id];
      exactly 50%/100%. */
   .prop-orbit-xy,
   .prop-orbit-xy-ebb {
-    offset-path: circle(var(--orbitR, 28%) at var(--orbitCx, 50%) var(--orbitCy, 50%));
+    offset-path: circle(var(--orbitR, 22%) at var(--orbitCx, 50%) var(--orbitCy, 50%));
     offset-rotate: 0deg;
   }
   .prop-orbit-xy {
@@ -474,6 +477,7 @@ const glintHalo = GLINT_HALO[id];
     0% {
       offset-distance: 0%;
       z-index: 7;
+      transform: scale(1);
     }
     49.9% {
       offset-distance: 49.9%;
@@ -482,6 +486,7 @@ const glintHalo = GLINT_HALO[id];
     50% {
       offset-distance: 50%;
       z-index: 0;
+      transform: scale(1.12);
     }
     99.9% {
       offset-distance: 99.9%;
@@ -490,6 +495,7 @@ const glintHalo = GLINT_HALO[id];
     100% {
       offset-distance: 100%;
       z-index: 7;
+      transform: scale(1);
     }
   }
 
