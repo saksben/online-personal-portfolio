@@ -44,17 +44,21 @@ const VARIANTS = ["bob", "drift", "orbit"] as const;
  *    (indices 6-10, one per fragment 0-4) ride that exact same circle,
  *    phase-delayed, so they trail their fragment around the ring instead of
  *    wobbling near it on an unrelated schedule -- the same "shares the
- *    leader's path, phase-offset" trick as oracle's shard swarm. Indices 5
- *    and 11 are two small crystal shards that belong to the gateway
- *    (fragment 2), not the character -- they get their own "gateway-shard"
- *    motion instead, a tight local loop around the gateway's own position
- *    rather than the character's. They use *different* classes
- *    (gateway-shard / gateway-shard-b) rather than a shared class with
- *    staggered delay, because delay would also shift *which point of the
- *    big circle* they sit on -- they need the exact same delay as the
- *    gateway (orbitDelay[2]) to stay locked to it, so the two shards'
- *    local loops are staggered by phase-shifting the keyframes themselves
- *    instead (see the CSS below).
+ *    leader's path, phase-offset" trick as oracle's shard swarm. Index 2
+ *    (a stone ruin) looks similar to the actual gateway but isn't it -- the
+ *    real gateway (with its glowing portal) was never auto-extracted at
+ *    all, since it stayed fused to the body in prep-art.mjs's connected-
+ *    component pass; it's manually extracted as index 12, and also joins
+ *    this same orbit. Indices 5 and 11 are two small crystal shards that
+ *    belong to *that* gateway (index 12), not the character -- they get
+ *    their own "gateway-shard" motion instead, a tight local loop around
+ *    the gateway's own position rather than the character's. They use
+ *    *different* classes (gateway-shard / gateway-shard-b) rather than a
+ *    shared class with staggered delay, because delay would also shift
+ *    *which point of the big circle* they sit on -- they need the exact
+ *    same delay as the gateway (gatewayDelay) to stay locked to it, so the
+ *    two shards' local loops are staggered by phase-shifting the keyframes
+ *    themselves instead (see the CSS below).
  */
 const MOTION: Partial<Record<ClassId, string[]>> = {
   oracle: Array(7).fill("shard-arc"),
@@ -65,7 +69,7 @@ const motionFor = (i: number) => {
   if (id === "worldbuilder") {
     if (i === 5) return "gateway-shard";
     if (i === 11) return "gateway-shard-b";
-    return i < 6 ? "orbit-xy" : "orbit-xy-ebb";
+    return i < 6 || i === 12 ? "orbit-xy" : "orbit-xy-ebb";
   }
   return MOTION[id]?.[i] ?? VARIANTS[i % VARIANTS.length];
 };
@@ -86,18 +90,25 @@ const ORBIT_T = 26; // seconds per revolution, shared by every fragment + its pa
 let orbitCx = 50;
 let orbitCy = 50;
 const orbitR = 22; // % of the canvas diagonal -- offset-path circle()'s radius unit
+/** Starting angle, as an offset-path delay, for a point relative to the
+ * shared circle's center (orbitCx/orbitCy) -- see the comment above. */
+const angleDelay = (originPct: { x: number; y: number }, centerPx: { x: number; y: number }) => {
+  const dx = (originPct.x / 100) * CANVAS_W - centerPx.x;
+  const dy = (originPct.y / 100) * CANVAS_H - centerPx.y;
+  const turns = Math.atan2(dy, dx) / (2 * Math.PI);
+  return -(((turns % 1) + 1) % 1) * ORBIT_T;
+};
 let orbitDelay: number[] = [];
+/** Index 12 is the real gateway (see MOTION comment below); indices 5 and
+ * 11 are its two shards, which need this exact delay too. */
+let gatewayDelay = 0;
 if (id === "worldbuilder" && props.length >= 6) {
   const fragments = props.slice(0, 6);
   orbitCx = fragments.reduce((sum, p) => sum + p.originPct.x, 0) / fragments.length;
   orbitCy = fragments.reduce((sum, p) => sum + p.originPct.y, 0) / fragments.length;
   const centerPx = { x: (orbitCx / 100) * CANVAS_W, y: (orbitCy / 100) * CANVAS_H };
-  orbitDelay = fragments.map((p) => {
-    const dx = (p.originPct.x / 100) * CANVAS_W - centerPx.x;
-    const dy = (p.originPct.y / 100) * CANVAS_H - centerPx.y;
-    const turns = Math.atan2(dy, dx) / (2 * Math.PI);
-    return -(((turns % 1) + 1) % 1) * ORBIT_T;
-  });
+  orbitDelay = fragments.map((p) => angleDelay(p.originPct, centerPx));
+  if (props[12]) gatewayDelay = angleDelay(props[12].originPct, centerPx);
 }
 
 /**
@@ -117,17 +128,18 @@ if (id === "worldbuilder" && props.length >= 6) {
  *    they stay locked to the same circle instead of drifting apart over
  *    time; each fragment's delay is its own measured starting angle
  *    (orbitDelay above), and its paired particle gets that same delay plus
- *    a small fixed lag so it trails the fragment around the ring. The two
- *    gateway shards (indices 5 and 11) reuse the gateway's own delay
- *    *exactly* (orbitDelay[2], no added offset) so they sit on the same
- *    point of the big circle as the gateway at every instant; their local
- *    loops are staggered via separate keyframes instead (see the CSS).
+ *    a small fixed lag so it trails the fragment around the ring. The real
+ *    gateway (index 12) uses its own measured angle (gatewayDelay) the
+ *    same way a fragment does. Its two shards (indices 5 and 11) reuse
+ *    that delay *exactly*, no added offset, so they sit on the same point
+ *    of the big circle as the gateway at every instant; their local loops
+ *    are staggered via separate keyframes instead (see the CSS).
  */
 const timingFor = (i: number) => {
   if (id === "oracle") return { duration: 7, delay: i * 0.18 };
   if (id === "archivist") return { duration: 4.5, delay: 0 };
   if (id === "worldbuilder") {
-    if (i === 5 || i === 11) return { duration: ORBIT_T, delay: orbitDelay[2] ?? 0 };
+    if (i === 5 || i === 11 || i === 12) return { duration: ORBIT_T, delay: gatewayDelay };
     const f = i < 6 ? i : i - 6;
     const lag = i < 6 ? 0 : 0.5;
     return { duration: ORBIT_T, delay: (orbitDelay[f] ?? 0) + lag };
