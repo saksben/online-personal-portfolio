@@ -70,38 +70,49 @@ const motionFor = (i: number) => {
 
 /**
  * World-fragments orbit the character on one shared circle (CSS
- * offset-path), centered on the five orbiting fragments' own centroid (not
- * index 5 -- that's the gateway shard now, recomposited to sit at the
- * gateway's position, so including it here would pull the center toward
- * the gateway instead of the actual orbiting group) and sized to clear the
- * art's side margins (see ART-ASSETS.md's ~5% margin rule).
+ * offset-path), centered on *him* -- the character's own body, not the
+ * floating props. orbitCx/orbitCy are the alpha-weighted centroid of
+ * idle.png's opaque pixels (computed once against the current art; re-run
+ * if the art changes): (46.99%, 52.94%). Averaging the five fragments'
+ * own hand-placed positions instead, as an earlier version did, isn't the
+ * same thing -- those were placed for how they look fanned out around him
+ * in a static pose, not to average out to his own center, and in practice
+ * landed 6+ points off horizontally (44.0% vs his actual 47.0%), visibly
+ * off-center from him. The body centroid is undisturbed by any of this
+ * (the gateway's already been extracted out of idle.png), so it's a
+ * stable, principled "him" to center on rather than a derived average
+ * that happens to drift whenever a prop is added, removed or moved.
  *
  * Each fragment's starting angle, measured from its *current* hand-placed
- * originPct, decides only its *order* around the circle, not its exact
- * starting position: delays are then reassigned to evenly spaced angles
- * (360/5 = 72° apart) in that same order. Using the raw measured angles
- * directly, as an earlier version did, packed three fragments within ~120°
- * of each other and the other two within ~35°, leaving two near-empty arcs
- * between them -- which reads as two separate clusters orbiting, each on
- * its own circle, rather than five fragments evenly sharing the one
- * circle. Evenly spacing them (while keeping their relative order, so nothing
- * crosses another fragment's path) fixes that without an arbitrary snap. */
+ * originPct relative to that center, decides only its *order* around the
+ * circle, not its exact starting position: delays are then reassigned to
+ * evenly spaced angles (360/5 = 72° apart) in that same order. Using the
+ * raw measured angles directly, as an earlier version did, packed three
+ * fragments within ~120° of each other and the other two within ~35°,
+ * leaving two near-empty arcs between them -- which reads as two separate
+ * clusters orbiting, each on its own circle, rather than five fragments
+ * evenly sharing the one circle. Evenly spacing them (while keeping their
+ * relative order, so nothing crosses another fragment's path) fixes that
+ * without an arbitrary snap. */
 const ORBIT_T = 26; // seconds per revolution, shared by every fragment + its particle
-let orbitCx = 50;
-let orbitCy = 50;
+const orbitCx = 46.99; // character's body centroid (idle.png alpha-weighted), not the props' own average
+const orbitCy = 52.94;
 const orbitR = 22; // % of the canvas diagonal -- offset-path circle()'s radius unit
-/** Angle (radians, atan2 convention) of a point relative to the shared
- * circle's center (orbitCx/orbitCy) -- see the comment above. */
+/** Angle of a point relative to the shared circle's center (orbitCx/
+ * orbitCy, see the comment above), normalized to [0, 2*PI) so sorting by
+ * it gives the true circular order. atan2's raw range is (-PI, PI]; sorting
+ * by that directly puts anything just past the +PI/-PI seam (e.g. 181°,
+ * which atan2 reports as -179°) at the *start* of the order instead of
+ * where it physically sits, scrambling every fragment's assigned angle. */
 const angleOf = (originPct: { x: number; y: number }, centerPx: { x: number; y: number }) => {
   const dx = (originPct.x / 100) * CANVAS_W - centerPx.x;
   const dy = (originPct.y / 100) * CANVAS_H - centerPx.y;
-  return Math.atan2(dy, dx);
+  const raw = Math.atan2(dy, dx);
+  return raw < 0 ? raw + 2 * Math.PI : raw;
 };
 let orbitDelay: number[] = [];
 if (id === "worldbuilder" && props.length >= 5) {
   const fragments = props.slice(0, 5);
-  orbitCx = fragments.reduce((sum, p) => sum + p.originPct.x, 0) / fragments.length;
-  orbitCy = fragments.reduce((sum, p) => sum + p.originPct.y, 0) / fragments.length;
   const centerPx = { x: (orbitCx / 100) * CANVAS_W, y: (orbitCy / 100) * CANVAS_H };
   const angles = fragments.map((p) => angleOf(p.originPct, centerPx));
   const order = angles.map((_, i) => i).sort((a, b) => angles[a] - angles[b]);
