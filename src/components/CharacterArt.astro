@@ -69,35 +69,40 @@ const motionFor = (i: number) => {
 };
 
 /**
- * World-fragments orbit the character on one shared circle (CSS
- * offset-path), centered on *him* -- the character's own body, not the
- * floating props. orbitCx/orbitCy are the alpha-weighted centroid of
- * idle.png's opaque pixels (computed once against the current art; re-run
- * if the art changes): (46.99%, 52.94%). Averaging the five fragments'
- * own hand-placed positions instead, as an earlier version did, isn't the
- * same thing -- those were placed for how they look fanned out around him
- * in a static pose, not to average out to his own center, and in practice
- * landed 6+ points off horizontally (44.0% vs his actual 47.0%), visibly
- * off-center from him. The body centroid is undisturbed by any of this
- * (the gateway's already been extracted out of idle.png), so it's a
- * stable, principled "him" to center on rather than a derived average
- * that happens to drift whenever a prop is added, removed or moved.
+ * World-fragments orbit the character on one shared ellipse (CSS
+ * offset-path), *not* a true circle -- his pose is too asymmetric (one arm
+ * raised and out, the other down and in, a narrow waist) for any circle to
+ * both clear his own silhouette and stay within the canvas. Checked this
+ * directly: sampling 360 points around a circle at the centroid (below)
+ * with the largest radius that still clears the ~5% side margins (22% of
+ * the canvas diagonal), 168 of those 360 points -- 47% of the path --
+ * land on his own opaque pixels. A circle large enough to clear him
+ * entirely needs ~55% radius, which clips well past the canvas edge. An
+ * ellipse (orbitRX/orbitRY, independent per axis, each in % of canvas
+ * width/height per the CSS ellipse() spec -- not the diagonal formula
+ * circle() uses) recentered toward his chest gets that overlap down to
+ * 28/360 (7.8%) at the largest size that still clears the margins (found
+ * by sampling a grid of centers/sizes and keeping the lowest-overlap
+ * combination, then pulling back ~1% from the exact margin for a safety
+ * buffer) -- not perfect, but close enough that nothing should visibly sit
+ * on top of him for long.
  *
  * Each fragment's starting angle, measured from its *current* hand-placed
  * originPct relative to that center, decides only its *order* around the
- * circle, not its exact starting position: delays are then reassigned to
+ * ellipse, not its exact starting position: delays are then reassigned to
  * evenly spaced angles (360/5 = 72° apart) in that same order. Using the
  * raw measured angles directly, as an earlier version did, packed three
  * fragments within ~120° of each other and the other two within ~35°,
  * leaving two near-empty arcs between them -- which reads as two separate
- * clusters orbiting, each on its own circle, rather than five fragments
- * evenly sharing the one circle. Evenly spacing them (while keeping their
+ * clusters orbiting, each on its own path, rather than five fragments
+ * evenly sharing the one path. Evenly spacing them (while keeping their
  * relative order, so nothing crosses another fragment's path) fixes that
  * without an arbitrary snap. */
 const ORBIT_T = 26; // seconds per revolution, shared by every fragment + its particle
-const orbitCx = 46.99; // character's body centroid (idle.png alpha-weighted), not the props' own average
-const orbitCy = 52.94;
-const orbitR = 22; // % of the canvas diagonal -- offset-path circle()'s radius unit
+const orbitCx = 50; // chosen (with orbitRX/orbitRY below) to minimize path-vs-body overlap, not his exact centroid
+const orbitCy = 47;
+const orbitRX = 44; // % of canvas width
+const orbitRY = 41; // % of canvas height
 /** Angle of a point relative to the shared circle's center (orbitCx/
  * orbitCy, see the comment above), normalized to [0, 2*PI) so sorting by
  * it gives the true circular order. atan2's raw range is (-PI, PI]; sorting
@@ -317,7 +322,7 @@ const glintHalo = GLINT_HALO[id];
   }
 </div>
 
-<style define:vars={{ orbitCx: `${orbitCx}%`, orbitCy: `${orbitCy}%`, orbitR: `${orbitR}%` }}>
+<style define:vars={{ orbitCx: `${orbitCx}%`, orbitCy: `${orbitCy}%`, orbitRX: `${orbitRX}%`, orbitRY: `${orbitRY}%` }}>
   .art {
     position: relative;
     width: 100%;
@@ -408,33 +413,34 @@ const glintHalo = GLINT_HALO[id];
   }
 
   /* Worldbuilder's world-fragments (see MOTION/orbitDelay above): a shared
-     CSS motion-path circle, centered on the fragments' own centroid
-     (--orbitCx/--orbitCy, set via define:vars below) with a fixed radius
-     (--orbitR). offset-anchor defaults to the element's transform-origin,
-     which is already set inline to each prop's own centroid, so it's the
-     *art's visible center* that rides the circle, not the canvas corner --
-     and offset-rotate: 0deg keeps the art upright instead of spinning to
-     face the direction of travel. Each fragment's animation-delay (see
+     CSS motion-path ellipse (see the comment on orbitCx/orbitRX above for
+     why it's an ellipse and not a circle), centered on --orbitCx/--orbitCy
+     with independent radii --orbitRX/--orbitRY (set via define:vars below).
+     offset-anchor defaults to the element's transform-origin, which is
+     already set inline to each prop's own centroid, so it's the *art's
+     visible center* that rides the path, not the canvas corner -- and
+     offset-rotate: 0deg keeps the art upright instead of spinning to face
+     the direction of travel. Each fragment's animation-delay (see
      timingFor) is its own measured starting angle, so it begins orbiting
      from right where it already sits. Its paired orbit ring/gem fleck
-     (the "-ebb" variant) rides the exact same circle, phase-delayed, so it
+     (the "-ebb" variant) rides the exact same path, phase-delayed, so it
      reads as trailing the fragment around the ring rather than moving on
      an unrelated schedule. Neither rides a scale() pulse -- a growing/
-     shrinking object moving along a flat circular path reads as spiraling
-     toward and away from the center, which is explicitly not wanted here
-     (see the commit history), even scoped to just the particles.
+     shrinking object moving along a flat path reads as spiraling toward
+     and away from the center, which is explicitly not wanted here (see
+     the commit history), even scoped to just the particles.
 
      Every fragment/particle stays in front of the body for its entire
      loop, same as every other character's props (default stacking order).
      An earlier version sent fragments behind the idle art for half the
-     circle as a z-axis depth cue -- but passing behind the body occludes
+     path as a z-axis depth cue -- but passing behind the body occludes
      most of the art, leaving just a sliver visible, which reads as the
      element shrinking and pulling in toward the center. That's the
-     opposite of the plain, constant-radius circular orbit wanted here, so
-     it's gone. */
+     opposite of the plain, constant-radius orbit wanted here, so it's
+     gone. */
   .prop-orbit-xy,
   .prop-orbit-xy-ebb {
-    offset-path: circle(var(--orbitR, 22%) at var(--orbitCx, 50%) var(--orbitCy, 50%));
+    offset-path: ellipse(var(--orbitRX, 44%) var(--orbitRY, 41%) at var(--orbitCx, 50%) var(--orbitCy, 47%));
     offset-rotate: 0deg;
   }
   .prop-orbit-xy {
