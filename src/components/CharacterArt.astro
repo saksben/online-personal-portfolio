@@ -129,6 +129,23 @@ const timingFor = (i: number) => {
 };
 
 /**
+ * offset-path's anchor point (which point of the box rides the path)
+ * defaults to the element's own transform-origin. The two gateway shards
+ * (indices 5, 11) share the gateway's offset-distance so they're phase
+ * locked to it, but their *own* originPct sits nowhere near the gateway's
+ * -- anchoring there would carry that whole gap along for the ride, so
+ * they'd swing through their own distant point on the circle instead of
+ * the gateway's. Anchoring them at the gateway's own originPct (fragment
+ * index 2) instead makes their offset-path position land exactly on the
+ * gateway, with only the small local wobble (see prop-gateway-shard)
+ * displacing them from it.
+ */
+const originFor = (i: number, prop: { originPct: { x: number; y: number } }) => {
+  if (id === "worldbuilder" && (i === 5 || i === 11)) return props[2]?.originPct ?? prop.originPct;
+  return prop.originPct;
+};
+
+/**
  * CSS-only glow (no separate art) positioned over a spot in the idle art
  * itself, for signature items that are held/worn (fused into the body
  * render) rather than a separate floating prop layer:
@@ -266,6 +283,7 @@ const glintHalo = GLINT_HALO[id];
         )}
         {props.map((prop, i) => {
           const timing = timingFor(i);
+          const origin = originFor(i, prop);
           return (
             <Image
               class={`layer prop prop-${motionFor(i)}`}
@@ -274,7 +292,7 @@ const glintHalo = GLINT_HALO[id];
               width={width}
               loading="lazy"
               style={{
-                transformOrigin: `${prop.originPct.x}% ${prop.originPct.y}%`,
+                transformOrigin: `${origin.x}% ${origin.y}%`,
                 animationDuration: `${timing.duration}s`,
                 animationDelay: `${timing.delay}s`,
               }}
