@@ -38,14 +38,13 @@ const VARIANTS = ["bob", "drift", "orbit"] as const;
  *  - courier's companion robot should read as pacing alongside him.
  *  - archivist's schema runes/hologram should glow brighter at the peak of
  *    their motion, like the lantern is revealing them.
- *  - worldbuilder's 5 world-fragments (indices 0-4) keep the default
- *    bob/drift/orbit cycle; their orbit rings + gem flecks (indices 6-10,
- *    extracted separately per fragment) follow their paired fragment's
- *    *exact* path (the "-ebb" keyframes below are copies of bob/drift/orbit
- *    with an added inward/outward scale pulse), slightly delayed -- the
- *    same "shares the leader's path, phase-offset" trick as oracle's
- *    shard swarm, which reads as genuinely following the element rather
- *    than wobbling near it on an unrelated schedule.
+ *  - worldbuilder's 6 world-fragments (indices 0-5) orbit the character on
+ *    one shared circle (see orbitDelay below) instead of the default
+ *    bob/drift/orbit; their orbit rings + gem flecks (indices 6-10, one per
+ *    fragment 0-4) ride that exact same circle, phase-delayed, so they
+ *    trail their fragment around the ring instead of wobbling near it on
+ *    an unrelated schedule -- the same "shares the leader's path,
+ *    phase-offset" trick as oracle's shard swarm.
  */
 const MOTION: Partial<Record<ClassId, string[]>> = {
   oracle: Array(7).fill("shard-arc"),
@@ -53,12 +52,39 @@ const MOTION: Partial<Record<ClassId, string[]>> = {
   archivist: Array(6).fill("glow-pulse"),
 };
 const motionFor = (i: number) => {
-  if (id === "worldbuilder" && i >= 6) {
-    const fragmentVariant = MOTION[id]?.[i - 6] ?? VARIANTS[(i - 6) % VARIANTS.length];
-    return `${fragmentVariant}-ebb`;
-  }
+  if (id === "worldbuilder") return i < 6 ? "orbit-xy" : "orbit-xy-ebb";
   return MOTION[id]?.[i] ?? VARIANTS[i % VARIANTS.length];
 };
+
+/**
+ * World-fragments orbit the character on one shared circle (CSS
+ * offset-path), centered on the fragments' own centroid and sized to clear
+ * the art's side margins (see ART-ASSETS.md's ~5% margin rule). Each
+ * fragment's starting angle is measured from its *current* hand-placed
+ * originPct, in canvas-pixel space since x/y% map to different pixel scales
+ * on this non-square canvas, then converted straight to an offset-distance
+ * phase -- arc length is proportional to angle on a true circle, so no
+ * easing curve is needed to keep constant angular speed. Every fragment
+ * therefore starts exactly where its art already sits and just orbits on
+ * from there, instead of snapping to an arbitrary evenly-spaced position.
+ */
+const ORBIT_T = 26; // seconds per revolution, shared by every fragment + its particle
+let orbitCx = 50;
+let orbitCy = 50;
+const orbitR = 22; // % of the canvas diagonal -- offset-path circle()'s radius unit
+let orbitDelay: number[] = [];
+if (id === "worldbuilder" && props.length >= 6) {
+  const fragments = props.slice(0, 6);
+  orbitCx = fragments.reduce((sum, p) => sum + p.originPct.x, 0) / fragments.length;
+  orbitCy = fragments.reduce((sum, p) => sum + p.originPct.y, 0) / fragments.length;
+  const centerPx = { x: (orbitCx / 100) * CANVAS_W, y: (orbitCy / 100) * CANVAS_H };
+  orbitDelay = fragments.map((p) => {
+    const dx = (p.originPct.x / 100) * CANVAS_W - centerPx.x;
+    const dy = (p.originPct.y / 100) * CANVAS_H - centerPx.y;
+    const turns = Math.atan2(dy, dx) / (2 * Math.PI);
+    return -(((turns % 1) + 1) % 1) * ORBIT_T;
+  });
+}
 
 /**
  * Per-prop animation-duration/delay, in seconds. Default staggers both
@@ -73,16 +99,19 @@ const motionFor = (i: number) => {
  *  - archivist's runes share the lantern-glow's exact duration and zero
  *    delay, so every rune illuminates in the same beat as the lantern
  *    rather than drifting in and out of sync with it over time.
- *  - worldbuilder's particles share their paired fragment's exact
- *    duration too, offset by a fixed small lag, so they trail it at a
- *    constant phase distance instead of running on an unrelated clock.
+ *  - worldbuilder's fragments all share one orbit duration (ORBIT_T) so
+ *    they stay locked to the same circle instead of drifting apart over
+ *    time; each fragment's delay is its own measured starting angle
+ *    (orbitDelay above), and its paired particle gets that same delay plus
+ *    a small fixed lag so it trails the fragment around the ring.
  */
 const timingFor = (i: number) => {
   if (id === "oracle") return { duration: 7, delay: i * 0.18 };
   if (id === "archivist") return { duration: 4.5, delay: 0 };
-  if (id === "worldbuilder" && i >= 6) {
-    const f = i - 6;
-    return { duration: 4.5 + (f % 4) * 0.8, delay: -(f * 0.6) + 0.35 };
+  if (id === "worldbuilder") {
+    const f = i < 6 ? i : i - 6;
+    const lag = i < 6 ? 0 : 0.5;
+    return { duration: ORBIT_T, delay: (orbitDelay[f] ?? 0) + lag };
   }
   return { duration: 4.5 + (i % 4) * 0.8, delay: -(i * 0.6) };
 };
@@ -247,7 +276,7 @@ const glintHalo = GLINT_HALO[id];
   }
 </div>
 
-<style>
+<style define:vars={{ orbitCx: `${orbitCx}%`, orbitCy: `${orbitCy}%`, orbitR: `${orbitR}%` }}>
   .art {
     position: relative;
     width: 100%;
@@ -337,43 +366,48 @@ const glintHalo = GLINT_HALO[id];
     }
   }
 
-  /* Worldbuilder's orbit rings + gem flecks (see MOTION above): each
-     "-ebb" variant is a copy of the matching bob/drift/orbit keyframes
-     below -- the exact same translate/rotate path -- with an added
-     scale() pulse (the "inward/outward ebb and flow"). Sharing the
-     fragment's own path, not an independent one, is what makes this read
-     as following the element rather than moving on its own schedule;
-     timingFor gives it the fragment's exact duration plus a fixed delay
-     so it trails at a constant phase lag, same idea as oracle's shard
-     swarm. */
-  .prop-bob-ebb {
-    animation: prop-bob-ebb 5s ease-in-out infinite;
+  /* Worldbuilder's world-fragments (see MOTION/orbitDelay above): a shared
+     CSS motion-path circle, centered on the fragments' own centroid
+     (--orbitCx/--orbitCy, set via define:vars below) with a fixed radius
+     (--orbitR). offset-anchor defaults to the element's transform-origin,
+     which is already set inline to each prop's own centroid, so it's the
+     *art's visible center* that rides the circle, not the canvas corner --
+     and offset-rotate: 0deg keeps the art upright instead of spinning to
+     face the direction of travel. Each fragment's animation-delay (see
+     timingFor) is its own measured starting angle, so it begins orbiting
+     from right where it already sits. Its paired orbit ring/gem fleck
+     (the "-ebb" variant) rides the exact same circle, phase-delayed, with
+     an added scale() pulse -- the "inward/outward ebb and flow" -- so it
+     reads as trailing the fragment around the ring rather than moving on
+     an unrelated schedule. */
+  .prop-orbit-xy,
+  .prop-orbit-xy-ebb {
+    offset-path: circle(var(--orbitR, 22%) at var(--orbitCx, 50%) var(--orbitCy, 50%));
+    offset-rotate: 0deg;
   }
-  @keyframes prop-bob-ebb {
+  .prop-orbit-xy {
+    animation: prop-orbit-xy 26s linear infinite;
+  }
+  @keyframes prop-orbit-xy {
+    to {
+      offset-distance: 100%;
+    }
+  }
+  .prop-orbit-xy-ebb {
+    animation: prop-orbit-xy-ebb 26s linear infinite;
+  }
+  @keyframes prop-orbit-xy-ebb {
+    0% {
+      offset-distance: 0%;
+      transform: scale(1);
+    }
     50% {
-      transform: translateY(-2.2%) rotate(2deg) scale(1.15);
+      offset-distance: 50%;
+      transform: scale(1.12);
     }
-  }
-  .prop-drift-ebb {
-    animation: prop-drift-ebb 6s ease-in-out infinite;
-  }
-  @keyframes prop-drift-ebb {
-    50% {
-      transform: translate(1.6%, -1.4%) rotate(-3deg) scale(1.15);
-    }
-  }
-  .prop-orbit-ebb {
-    animation: prop-orbit-ebb 7s ease-in-out infinite;
-  }
-  @keyframes prop-orbit-ebb {
-    25% {
-      transform: translate(1.2%, -1.6%) rotate(4deg) scale(0.88);
-    }
-    50% {
-      transform: translateY(-2.4%) scale(1.18);
-    }
-    75% {
-      transform: translate(-1.2%, -1.6%) rotate(-4deg) scale(0.88);
+    100% {
+      offset-distance: 100%;
+      transform: scale(1);
     }
   }
 
