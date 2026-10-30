@@ -38,13 +38,17 @@ const VARIANTS = ["bob", "drift", "orbit"] as const;
  *  - courier's companion robot should read as pacing alongside him.
  *  - archivist's schema runes/hologram should glow brighter at the peak of
  *    their motion, like the lantern is revealing them.
- *  - worldbuilder's 6 world-fragments (indices 0-5) orbit the character on
- *    one shared circle (see orbitDelay below) instead of the default
- *    bob/drift/orbit; their orbit rings + gem flecks (indices 6-10, one per
- *    fragment 0-4) ride that exact same circle, phase-delayed, so they
- *    trail their fragment around the ring instead of wobbling near it on
- *    an unrelated schedule -- the same "shares the leader's path,
- *    phase-offset" trick as oracle's shard swarm.
+ *  - worldbuilder's world-fragments (indices 0-4; index 5 is excluded, see
+ *    below) orbit the character on one shared circle (see orbitDelay below)
+ *    instead of the default bob/drift/orbit; their orbit rings + gem flecks
+ *    (indices 6-10, one per fragment 0-4) ride that exact same circle,
+ *    phase-delayed, so they trail their fragment around the ring instead of
+ *    wobbling near it on an unrelated schedule -- the same "shares the
+ *    leader's path, phase-offset" trick as oracle's shard swarm. Indices 5
+ *    and 11 are two small crystal shards that belong to the gateway
+ *    (fragment 2), not the character -- they get their own "gateway-shard"
+ *    motion instead, a tight local loop around the gateway's own position
+ *    rather than the character's.
  */
 const MOTION: Partial<Record<ClassId, string[]>> = {
   oracle: Array(7).fill("shard-arc"),
@@ -52,7 +56,10 @@ const MOTION: Partial<Record<ClassId, string[]>> = {
   archivist: Array(6).fill("glow-pulse"),
 };
 const motionFor = (i: number) => {
-  if (id === "worldbuilder") return i < 6 ? "orbit-xy" : "orbit-xy-ebb";
+  if (id === "worldbuilder") {
+    if (i === 5 || i === 11) return "gateway-shard";
+    return i < 6 ? "orbit-xy" : "orbit-xy-ebb";
+  }
   return MOTION[id]?.[i] ?? VARIANTS[i % VARIANTS.length];
 };
 
@@ -103,12 +110,17 @@ if (id === "worldbuilder" && props.length >= 6) {
  *    they stay locked to the same circle instead of drifting apart over
  *    time; each fragment's delay is its own measured starting angle
  *    (orbitDelay above), and its paired particle gets that same delay plus
- *    a small fixed lag so it trails the fragment around the ring.
+ *    a small fixed lag so it trails the fragment around the ring. The two
+ *    gateway shards (indices 5 and 11) reuse the gateway's own delay
+ *    (orbitDelay[2]) so their local loop stays centered on it, staggered
+ *    from each other so they don't overlap.
  */
 const timingFor = (i: number) => {
   if (id === "oracle") return { duration: 7, delay: i * 0.18 };
   if (id === "archivist") return { duration: 4.5, delay: 0 };
   if (id === "worldbuilder") {
+    if (i === 5) return { duration: ORBIT_T, delay: orbitDelay[2] ?? 0 };
+    if (i === 11) return { duration: ORBIT_T, delay: (orbitDelay[2] ?? 0) + 1.3 };
     const f = i < 6 ? i : i - 6;
     const lag = i < 6 ? 0 : 0.5;
     return { duration: ORBIT_T, delay: (orbitDelay[f] ?? 0) + lag };
@@ -295,6 +307,32 @@ const glintHalo = GLINT_HALO[id];
   .selected {
     opacity: 0;
   }
+  /* Explicit stacking ladder matching the DOM order below, so worldbuilder's
+     orbiting props (see .prop-orbit-xy) can dip to z-index: 0 -- behind the
+     idle/hover art -- for part of their path without disturbing every other
+     class, which just keeps the default z-index: 2 and stays on top like
+     before. */
+  .idle {
+    z-index: 1;
+  }
+  .hover {
+    z-index: 2;
+  }
+  .selected {
+    z-index: 3;
+  }
+  .lantern-glow {
+    z-index: 4;
+  }
+  .glint-halo {
+    z-index: 5;
+  }
+  .glint-core {
+    z-index: 6;
+  }
+  .prop {
+    z-index: 7;
+  }
   :global(li[data-current="true"]) .art[data-has-hover] .idle {
     opacity: 0;
   }
@@ -376,10 +414,21 @@ const glintHalo = GLINT_HALO[id];
      face the direction of travel. Each fragment's animation-delay (see
      timingFor) is its own measured starting angle, so it begins orbiting
      from right where it already sits. Its paired orbit ring/gem fleck
-     (the "-ebb" variant) rides the exact same circle, phase-delayed, with
-     an added scale() pulse -- the "inward/outward ebb and flow" -- so it
+     (the "-ebb" variant) rides the exact same circle, phase-delayed, so it
      reads as trailing the fragment around the ring rather than moving on
-     an unrelated schedule. */
+     an unrelated schedule.
+
+     z-index flips from 7 (front, matching every other prop) to 0 (behind
+     the idle art, z-index: 1) for the half of the circle where y >= center
+     -- offset-distance 0-50% sweeps through the bottom of the circle, which
+     reads as "nearer, passing in front"; 50-100% sweeps the top, "farther,
+     passing behind" -- giving the flat xy circle an actual z-axis read as
+     fragments cross the body. Each z-index is set at two adjacent keyframe
+     points (e.g. 49.9%/50%) rather than one, because browsers interpolate
+     a non-interpolable property like z-index by flipping at the *midpoint*
+     between its two surrounding keyframes, not at either one's own
+     percentage -- two points 0.1% apart pins that flip to (effectively)
+     exactly 50%/100%. */
   .prop-orbit-xy,
   .prop-orbit-xy-ebb {
     offset-path: circle(var(--orbitR, 22%) at var(--orbitCx, 50%) var(--orbitCy, 50%));
@@ -389,8 +438,25 @@ const glintHalo = GLINT_HALO[id];
     animation: prop-orbit-xy 26s linear infinite;
   }
   @keyframes prop-orbit-xy {
-    to {
+    0% {
+      offset-distance: 0%;
+      z-index: 7;
+    }
+    49.9% {
+      offset-distance: 49.9%;
+      z-index: 7;
+    }
+    50% {
+      offset-distance: 50%;
+      z-index: 0;
+    }
+    99.9% {
+      offset-distance: 99.9%;
+      z-index: 0;
+    }
+    100% {
       offset-distance: 100%;
+      z-index: 7;
     }
   }
   .prop-orbit-xy-ebb {
@@ -399,15 +465,105 @@ const glintHalo = GLINT_HALO[id];
   @keyframes prop-orbit-xy-ebb {
     0% {
       offset-distance: 0%;
-      transform: scale(1);
+      z-index: 7;
+    }
+    49.9% {
+      offset-distance: 49.9%;
+      z-index: 7;
     }
     50% {
       offset-distance: 50%;
-      transform: scale(1.12);
+      z-index: 0;
+    }
+    99.9% {
+      offset-distance: 99.9%;
+      z-index: 0;
     }
     100% {
       offset-distance: 100%;
-      transform: scale(1);
+      z-index: 7;
+    }
+  }
+
+  /* The gateway's two small shards (MOTION indices 5 and 11, see above):
+     they ride the *same* big circle as the gateway itself (orbitDelay[2]),
+     staying locked to its position, plus a small, fast translate() loop
+     (four cardinal points, repeated 5x per 26s revolution) layered on top
+     via plain transform -- offset-path only positions the box, so a
+     transform on top of it composes rather than overrides, the same trick
+     prop-orbit-xy-ebb used for its old scale pulse. That reads as two
+     shards actually circling the gateway, rather than the gateway's own
+     slow character-orbit. */
+  .prop-gateway-shard {
+    offset-path: circle(var(--orbitR, 22%) at var(--orbitCx, 50%) var(--orbitCy, 50%));
+    offset-rotate: 0deg;
+    animation: prop-gateway-shard 26s linear infinite;
+  }
+  @keyframes prop-gateway-shard {
+    0% {
+      offset-distance: 0%;
+      transform: translate(3.75%, 0%);
+    }
+    5% {
+      transform: translate(0%, 2.25%);
+    }
+    10% {
+      transform: translate(-3.75%, 0%);
+    }
+    15% {
+      transform: translate(0%, -2.25%);
+    }
+    20% {
+      transform: translate(3.75%, 0%);
+    }
+    25% {
+      transform: translate(0%, 2.25%);
+    }
+    30% {
+      transform: translate(-3.75%, 0%);
+    }
+    35% {
+      transform: translate(0%, -2.25%);
+    }
+    40% {
+      transform: translate(3.75%, 0%);
+    }
+    45% {
+      transform: translate(0%, 2.25%);
+    }
+    50% {
+      transform: translate(-3.75%, 0%);
+    }
+    55% {
+      transform: translate(0%, -2.25%);
+    }
+    60% {
+      transform: translate(3.75%, 0%);
+    }
+    65% {
+      transform: translate(0%, 2.25%);
+    }
+    70% {
+      transform: translate(-3.75%, 0%);
+    }
+    75% {
+      transform: translate(0%, -2.25%);
+    }
+    80% {
+      transform: translate(3.75%, 0%);
+    }
+    85% {
+      transform: translate(0%, 2.25%);
+    }
+    90% {
+      transform: translate(-3.75%, 0%);
+    }
+    95% {
+      transform: translate(0%, -2.25%);
+    }
+    100% {
+      offset-distance: 100%;
+      transform: translate(3.75%, 0%);
     }
   }
 
