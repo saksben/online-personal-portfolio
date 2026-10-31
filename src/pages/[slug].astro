@@ -33,6 +33,12 @@ const bg = characterArt(c.id, "bg");
 let n = 0;
 const num = () => String(++n).padStart(2, "0");
 
+// Keep in sync with the `.hero-art :global(.art-body)` scale below -- also
+// passed into CharacterArt so it can pre-compensate percent-based geometry
+// (currently just worldbuilder's orbit radii) that was tuned by eye against
+// the unscaled roster size, so it doesn't get stretched past its margins.
+const HERO_ART_SCALE = 1.15;
+
 const path = `/${c.id}/`;
 const jsonLd = {
   "@context": "https://schema.org",
@@ -70,7 +76,7 @@ const jsonLd = {
         {bg && <Image class="hero-bg" src={bg} alt="" width={1600} loading="eager" />}
         <div class="hero-inner">
           <div class="hero-art rise">
-            <CharacterArt id={c.id} width={900} describe />
+            <CharacterArt id={c.id} width={900} describe heroScale={HERO_ART_SCALE} />
           </div>
           <div class="hero-copy rise">
             <p class="kicker">Class dossier · {c.archetype}</p>
@@ -196,7 +202,7 @@ const jsonLd = {
   </div>
 </Base>
 
-<style>
+<style define:vars={{ "hero-art-scale": HERO_ART_SCALE }}>
   .dossier {
     min-height: 100svh;
     background: var(--color-void);
@@ -276,7 +282,7 @@ const jsonLd = {
   }
   .hero-inner {
     display: grid;
-    grid-template-columns: minmax(220px, 0.8fr) 1.2fr;
+    grid-template-columns: minmax(300px, 1fr) 1.2fr;
     gap: clamp(1rem, 4vw, 4rem);
     align-items: end;
     width: min(1100px, 100%);
@@ -284,10 +290,46 @@ const jsonLd = {
     padding: clamp(1.5rem, 4vw, 3rem) clamp(16px, 4vw, 32px) 0;
   }
   .hero-art {
-    height: clamp(320px, 56svh, 560px);
+    height: clamp(380px, 72svh, 760px);
+    overflow: hidden;
     filter: drop-shadow(0 0 30px color-mix(in oklab, var(--c-glow) 40%, transparent));
   }
+  /* Every idle render carries a built-in transparent margin above the head
+     (checked against all 5: the tightest, worldbuilder, still has ~13% of
+     clear canvas above the actual art) -- fine for the roster slot's small
+     `contain` fit, but dead space on this bigger hero portrait. Scale the
+     body art up from the (feet-anchored) bottom so that margin gets pushed
+     off the top edge and clipped by the overflow above, instead of shrinking
+     the figure to fit it in.
+
+     Targets .art-body, which now wraps the idle/hover/selected layers, the
+     glow/glint spots, AND the floating props together (see CharacterArt.astro)
+     -- all of them share the same canvas-percent coordinate space as the body
+     art, so they all need to move and grow together when the body does.
+     Excluding the props from this group was tried first and was wrong: the
+     body would visually grow/shift up from this scale while the props stayed
+     put at the old (smaller) body's coordinates, so every one of them read as
+     having slipped down and away from the character (worldbuilder's
+     fragments drifting off the canvas edge, archivist's runes away from the
+     lantern, oracle's shard off the shoulder, courier's map cards off the
+     map, even the static gateway sitting too low).
+
+     Each prop/spot still points its own inline transform-origin at its own
+     spot for its own independent animation (offset-path orbit, translate
+     wobble, glow pulse) -- that nests fine inside this shared group
+     transform, since a child's own transform composes with an ancestor's
+     rather than replacing it. */
+  .hero-art :global(.art-body) {
+    transform: scale(var(--hero-art-scale));
+    transform-origin: 50% 100%;
+  }
   .hero-copy {
+    /* Without this, a grid item defaults to min-width: auto, so a long
+       one-word class name (e.g. "WORLDBUILDER") at the h1's huge font size
+       forces this column wider than its fr share and steals width from
+       .hero-art -- only noticeable on that one page, since it's the only
+       class name that's a single long word. */
+    min-width: 0;
     align-self: center;
     padding-bottom: 2.5rem;
   }

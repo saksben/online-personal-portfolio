@@ -18,8 +18,19 @@ interface Props {
   /** Provide alt text when the art is not decorative. */
   describe?: boolean;
   loading?: "eager" | "lazy";
+  /**
+   * The uniform CSS `scale()` factor the hosting page applies to `.art-body`
+   * (see [slug].astro's `.hero-art :global(.art-body)`), or 1 on the roster
+   * where no such scale exists. Needed here so percent-based geometry tuned
+   * by eye at the unscaled (roster) size -- currently just worldbuilder's
+   * orbit radii, see orbitRX/orbitRY below -- can be pre-compensated to land
+   * back on those exact same safe coordinates once the host's scale is
+   * applied, instead of being stretched 15% past the margins they were
+   * carefully tuned to clear.
+   */
+  heroScale?: number;
 }
-const { id, width = 640, describe = false, loading = "eager" } = Astro.props;
+const { id, width = 640, describe = false, loading = "eager", heroScale = 1 } = Astro.props;
 const character = characterById[id];
 const idle = characterArt(id, "idle");
 const hover = characterArt(id, "hover");
@@ -103,6 +114,38 @@ const orbitCx = 50; // chosen (with orbitRX/orbitRY below) to minimize path-vs-b
 const orbitCy = 47;
 const orbitRX = 44; // % of canvas width
 const orbitRY = 41; // % of canvas height
+/**
+ * The CSS vars actually rendered (orbitCx/orbitCy/orbitRX/orbitRY above stay
+ * as-is for the angleOf/ordering math below, which only cares about the
+ * ellipse's shape, not which page it renders on). On the roster, heroScale
+ * is 1 and these pass through unchanged. On the hero page, .art-body (and
+ * everything riding its offset-path, since the path lives on an element
+ * that's itself scaled as part of that group) gets uniformly scaled up by
+ * heroScale from (50%, 100%) -- see [slug].astro. Left uncompensated, that
+ * stretches this orbit 15% past the margins it was tuned to clear. Solving
+ * the scale's own mapping (new = origin + heroScale*(old - origin)) for the
+ * "old" that lands back on each safe target value cancels that out, so the
+ * orbit ends up in the exact same screen-relative spot on both pages.
+ *
+ * The exact cancellation alone still wasn't enough in practice -- orbitRX/
+ * orbitRY above were already tuned down to ~1% of clearance on the roster,
+ * and that margin was only ever checked against each fragment/particle's
+ * own *anchor point* riding the ellipse, not against how far its actual art
+ * extends past that anchor. Most of them are small enough for that not to
+ * matter, but the widest one (prop-6, one of the orbit-ring "particle"
+ * trails) has a bounding box 28.7% of canvas width -- its own art already
+ * touches the canvas's left edge (boxPct.left: 0) before it's even moving.
+ * HERO_ORBIT_SAFETY_X/_Y shrink the radii an extra bit, hero-page-only
+ * (where overflow:hidden actually bites, unlike the roster), to clear that.
+ * X needs much more room than Y since that's specifically where the wide
+ * trail art was clipping; Y already had enough slack at a lighter shrink. */
+const HERO_ORBIT_SAFETY_X = 0.68;
+const HERO_ORBIT_SAFETY_Y = 0.82;
+const unscalePos = (target: number, origin: number) => origin + (target - origin) / heroScale;
+const orbitCxCss = unscalePos(orbitCx, 50);
+const orbitCyCss = unscalePos(orbitCy, 100);
+const orbitRXCss = (orbitRX * (heroScale !== 1 ? HERO_ORBIT_SAFETY_X : 1)) / heroScale;
+const orbitRYCss = (orbitRY * (heroScale !== 1 ? HERO_ORBIT_SAFETY_Y : 1)) / heroScale;
 /** Angle of a point relative to the shared circle's center (orbitCx/
  * orbitCy, see the comment above), normalized to [0, 2*PI) so sorting by
  * it gives the true circular order. atan2's raw range is (-PI, PI]; sorting
@@ -156,7 +199,7 @@ const timingFor = (i: number) => {
     if (i === 5) return { duration: 5, delay: 0 };
     if (i === 11) return { duration: 5, delay: 0.5 };
     const f = i < 6 ? i : i - 6;
-    const lag = i < 6 ? 0 : 0.5;
+    const lag = i < 6 ? 0 : 0.15;
     return { duration: ORBIT_T, delay: (orbitDelay[f] ?? 0) + lag };
   }
   return { duration: 4.5 + (i % 4) * 0.8, delay: -(i * 0.6) };
@@ -286,35 +329,48 @@ const glintHalo = GLINT_HALO[id];
   {
     idle ? (
       <>
-        <Image class="layer idle" src={idle} alt={alt} width={width} loading={loading} />
-        {hover && <Image class="layer hover" src={hover} alt="" width={width} loading="lazy" />}
-        {selected && <Image class="layer selected" src={selected} alt="" width={width} loading="lazy" />}
-        {glow && (
-          <img class="layer lantern-glow" src={spotSvg(glow)} alt="" style={{ transformOrigin: `${glow.x}% ${glow.y}%` }} />
-        )}
-        {glintHalo && (
-          <img class="layer glint-halo" src={spotSvg(glintHalo)} alt="" style={{ transformOrigin: `${glintHalo.x}% ${glintHalo.y}%` }} />
-        )}
-        {glint && (
-          <img class="layer glint-core" src={spotSvg(glint)} alt="" style={{ transformOrigin: `${glint.x}% ${glint.y}%` }} />
-        )}
-        {props.map((prop, i) => {
-          const timing = timingFor(i);
-          return (
-            <Image
-              class={`layer prop prop-${motionFor(i)}`}
-              src={prop.image}
-              alt=""
-              width={width}
-              loading="lazy"
-              style={{
-                transformOrigin: `${prop.originPct.x}% ${prop.originPct.y}%`,
-                animationDuration: `${timing.duration}s`,
-                animationDelay: `${timing.delay}s`,
-              }}
-            />
-          );
-        })}
+        {/* Everything here shares the body art's own canvas placement (idle,
+            hover/selected swaps, the glow/glint spots, and the floating
+            props all sit in the same canvas-percent coordinate space).
+            Wrapped together so a page can zoom this whole group in from one
+            shared origin (see .hero-art in [slug].astro) -- each prop and
+            glow/glint spot still points its own transform-origin at its own
+            spot for its own independent animation, which nests fine inside
+            the group's shared transform; what matters is that NONE of them
+            sit outside this wrapper, or the group transform would scale the
+            body without moving them, leaving every one of them stranded at
+            the old (smaller/lower) body's coordinates. */}
+        <div class="art-body">
+          <Image class="layer idle" src={idle} alt={alt} width={width} loading={loading} />
+          {hover && <Image class="layer hover" src={hover} alt="" width={width} loading="lazy" />}
+          {selected && <Image class="layer selected" src={selected} alt="" width={width} loading="lazy" />}
+          {glow && (
+            <img class="layer lantern-glow" src={spotSvg(glow)} alt="" style={{ transformOrigin: `${glow.x}% ${glow.y}%` }} />
+          )}
+          {glintHalo && (
+            <img class="layer glint-halo" src={spotSvg(glintHalo)} alt="" style={{ transformOrigin: `${glintHalo.x}% ${glintHalo.y}%` }} />
+          )}
+          {glint && (
+            <img class="layer glint-core" src={spotSvg(glint)} alt="" style={{ transformOrigin: `${glint.x}% ${glint.y}%` }} />
+          )}
+          {props.map((prop, i) => {
+            const timing = timingFor(i);
+            return (
+              <Image
+                class={`layer prop prop-${motionFor(i)}`}
+                src={prop.image}
+                alt=""
+                width={width}
+                loading="lazy"
+                style={{
+                  transformOrigin: `${prop.originPct.x}% ${prop.originPct.y}%`,
+                  animationDuration: `${timing.duration}s`,
+                  animationDelay: `${timing.delay}s`,
+                }}
+              />
+            );
+          })}
+        </div>
       </>
     ) : (
       <PlaceholderFigure id={id} label={describe ? character.artAlt : undefined} />
@@ -322,9 +378,16 @@ const glintHalo = GLINT_HALO[id];
   }
 </div>
 
-<style define:vars={{ orbitCx: `${orbitCx}%`, orbitCy: `${orbitCy}%`, orbitRX: `${orbitRX}%`, orbitRY: `${orbitRY}%` }}>
+<style define:vars={{ orbitCx: `${orbitCxCss}%`, orbitCy: `${orbitCyCss}%`, orbitRX: `${orbitRXCss}%`, orbitRY: `${orbitRYCss}%` }}>
   .art {
     position: relative;
+    width: 100%;
+    height: 100%;
+    isolation: isolate;
+  }
+  .art-body {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
   }
@@ -512,8 +575,12 @@ const glintHalo = GLINT_HALO[id];
   }
 
   /* Courier's robot: a quick side-to-side pacing cycle with a little step
-     bounce, so it reads as walking alongside him rather than floating. */
+     bounce, so it reads as walking alongside him rather than floating.
+     z-index: -1 (safe inside .art's isolation above) keeps it a companion
+     at his feet instead of a cutout pasted over his legs -- every other
+     prop/layer is z-index: auto, which paints above a negative z-index. */
   .prop-walk {
+    z-index: -1;
     animation: prop-walk 3.6s ease-in-out infinite;
   }
   @keyframes prop-walk {
@@ -582,7 +649,11 @@ const glintHalo = GLINT_HALO[id];
     opacity: 0;
     pointer-events: none;
   }
-  :global(li[data-current="true"]) .glint-core {
+  /* On the class page's hero portrait there's no roster slot to go
+     "current", so it loops continuously instead of syncing to the breathe
+     cycle -- the one place this art holds still, the glint shouldn't. */
+  :global(li[data-current="true"]) .glint-core,
+  :global(.hero-art) .glint-core {
     animation: glint-pulse 3.6s ease-in-out infinite;
   }
   @keyframes glint-pulse {
@@ -605,7 +676,8 @@ const glintHalo = GLINT_HALO[id];
     opacity: 0;
     pointer-events: none;
   }
-  :global(li[data-current="true"]) .glint-halo {
+  :global(li[data-current="true"]) .glint-halo,
+  :global(.hero-art) .glint-halo {
     animation: glint-halo-pulse 3.6s ease-in-out infinite;
   }
   @keyframes glint-halo-pulse {
